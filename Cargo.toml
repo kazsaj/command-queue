@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["kazsaj <ksajkowski@gmail.com>"]
 
 [dependencies]
+redis = "0.10.0"
