@@ -1,0 +1,15 @@
+version: "2.0"
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.16.238.0/24
+services:
+  cache:
+    container_name: command_queue_redis
+    image: redis:5-alpine
+    networks:
+      default:
+        ipv4_address: 192.16.238.10
