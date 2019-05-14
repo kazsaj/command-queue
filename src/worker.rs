@@ -4,16 +4,14 @@ use std::thread;
 use std::time::Duration;
 use worker::redis::Commands;
 
-pub fn main()
+pub fn main(thread_number: i32, queue_name: &str)
 {
-    let queue_name = "queue";
     for i in 1..10 {
-        println!("worker pull number {}", i);
         thread::sleep(Duration::from_millis(1));
         let pulled_value = pop_from_queue(queue_name);
         match pulled_value {
-            Ok(value) => println!("got a value: {}", value.1),
-            Err(value) => println!("an error occurred: {}", value),
+            Ok(value) => println!("{} pull {}/{}: {}", queue_name, thread_number, i, value.1),
+            Err(value) => println!("{} pull {}/{}: {}", queue_name, thread_number, i, value),
         }
     }
 }
