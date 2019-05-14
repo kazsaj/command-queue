@@ -22,3 +22,18 @@ impl ConnectionConfig<'_> {
         return connection_string;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use config::ConnectionConfig;
+
+    #[test]
+    fn get_connection_string() {
+        let config = ConnectionConfig {
+            hostname: "server_hostname",
+            port: 666,
+            timeout: 3,
+        };
+        assert_eq!(config.get_connection_string(), "redis://server_hostname:666");
+    }
+}
