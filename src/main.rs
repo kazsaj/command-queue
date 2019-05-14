@@ -7,7 +7,7 @@ use config::ConnectionConfig;
 fn main() {
     println!("Starting main thread");
 
-    let configured_threads_count = 4;
+    let configured_threads_count: usize = 4;
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     let queue_name = "queue";
     let connection_config = ConnectionConfig {

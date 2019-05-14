@@ -3,7 +3,7 @@ extern crate redis;
 use worker::redis::Commands;
 use config::ConnectionConfig;
 
-pub fn main(thread_number: i32, config: ConnectionConfig, queue_name: &str)
+pub fn main(thread_number: usize, config: ConnectionConfig, queue_name: &str)
 {
     for i in 1..10 {
         let pulled_value = pop_from_queue(&config, queue_name);
