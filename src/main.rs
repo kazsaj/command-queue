@@ -37,11 +37,11 @@ fn main() {
         let mut queues_copy: Vec<QueueConfig> = Vec::new();
 
         // remove from cloned queue list, to avoid duplicates
-        for i in 0..queues.len() {
-            if queues[i].name == thread_queue.name {
+        for k in 0..queues.len() {
+            if queues[k].name == thread_queue.name {
                 continue;
             }
-            let copied_config = queues[i].clone();
+            let copied_config = queues[k].clone();
             queues_copy.push(copied_config);
         }
 
