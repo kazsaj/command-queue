@@ -23,6 +23,7 @@ impl ConnectionConfig<'_> {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct QueueConfig<'a> {
     pub name: &'a str,
 }
