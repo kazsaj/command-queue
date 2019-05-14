@@ -2,6 +2,7 @@ mod config;
 mod worker;
 
 use std::thread;
+use config::ConnectionConfig;
 
 fn main() {
     println!("Starting main thread");
@@ -9,11 +10,16 @@ fn main() {
     let configured_threads_count = 2;
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     let queue_name = "queue";
+    let connection_config = ConnectionConfig {
+        hostname: "command_queue_redis",
+        port: 6379
+    };
 
     for i in 0..configured_threads_count {
         println!("Spawning worker thread {} using list {}", i, queue_name);
         let thread_number = i.clone();
-        threads.push(thread::spawn(move || worker::main(thread_number, queue_name)));
+        let thread_config = connection_config.clone();
+        threads.push(thread::spawn(move || worker::main(thread_number, thread_config, queue_name)));
     }
 
     // wait for all the threads to finish before exiting
