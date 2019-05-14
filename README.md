@@ -4,7 +4,7 @@
 - (OK) get one element from work list
 - (OK) handle high priority and default priority queue
 - (OK) use a different queue name for each thread
-- use the remaining queues if the main one for the thread does not have anything to process 
+- (OK) use the remaining queues if the main one for the thread does not have anything to process
 - read connection details from some configuration file
 - decode JSON element from a work list
 

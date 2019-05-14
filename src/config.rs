@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Clone, Debug)]
 pub struct ConnectionConfig<'a> {
     pub hostname: &'a str,
@@ -23,7 +25,7 @@ impl ConnectionConfig<'_> {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct QueueConfig<'a> {
     pub name: &'a str,
 }
@@ -43,6 +45,11 @@ impl QueueConfig<'_> {
     }
 }
 
+impl fmt::Display for QueueConfig<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "QueueConfig: {}", self.name)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -58,6 +65,7 @@ mod tests {
         };
         assert_eq!(config.get_connection_string(), "redis://server_hostname:666");
     }
+
     #[test]
     fn get_queue_name() {
         let queue = QueueConfig {
