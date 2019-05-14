@@ -18,5 +18,5 @@ fn pop_from_queue(config: &ConnectionConfig, queue_name: &str) -> redis::RedisRe
     let connection_string = config.get_connection_string();
     let client = redis::Client::open(connection_string.as_str())?;
     let connection = client.get_connection()?;
-    connection.blpop(queue_name, 10)
+    connection.blpop(queue_name, config.timeout)
 }

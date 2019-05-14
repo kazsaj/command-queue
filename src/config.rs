@@ -1,7 +1,8 @@
 #[derive(Clone, Debug)]
 pub struct ConnectionConfig<'a> {
     pub hostname: &'a str,
-    pub port: i32,
+    pub port: usize,
+    pub timeout: usize,
 }
 
 impl ConnectionConfig<'_> {
