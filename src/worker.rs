@@ -5,6 +5,7 @@ use config::ConnectionConfig;
 use config::QueueConfig;
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig) {
+    println!("Spawning worker thread {} using list {:#?}", thread_number, queue);
     for _i in 1..10 {
         if pop_and_process(thread_number, &config, &queue, true) {
             continue;

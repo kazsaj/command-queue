@@ -8,22 +8,28 @@ use config::QueueConfig;
 fn main() {
     println!("Starting main thread");
 
-    let configured_threads_count: usize = 4;
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
-    let main_queue = QueueConfig {
-        name: "queue"
-    };
+    let mut queues: Vec<QueueConfig> = Vec::new();
+    queues.push(QueueConfig {
+        name: "alpha",
+    });
+    queues.push(QueueConfig {
+        name: "bravo",
+    });
+    queues.push(QueueConfig {
+        name: "charlie",
+    });
+
     let connection_config = ConnectionConfig {
         hostname: "command_queue_redis",
         port: 6379,
         timeout: 3,
     };
 
-    for i in 0..configured_threads_count {
-        println!("Spawning worker thread {} using list {:#?}", i, main_queue);
+    for i in 0..queues.len() {
+        let thread_queue = queues[i].clone();
         let thread_number = i.clone();
         let thread_config = connection_config.clone();
-        let thread_queue = main_queue.clone();
         threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue)));
     }
 
