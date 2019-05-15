@@ -21,7 +21,7 @@ impl ConnectionConfig {
             connection_string.push_str(port_number.as_str());
         }
 
-        return connection_string;
+        connection_string
     }
 }
 
@@ -34,12 +34,12 @@ impl QueueConfig {
     pub fn get_priority_queue_name(&self) -> String {
         let mut queue_name = self.name.clone();
         queue_name.push_str("_priority");
-        return queue_name;
+        queue_name
     }
     pub fn get_default_queue_name(&self) -> String {
         let mut queue_name = self.name.clone();
         queue_name.push_str("_default");
-        return queue_name;
+        queue_name
     }
 }
 

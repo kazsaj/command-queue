@@ -39,7 +39,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
         Err(value) => println!("#{} pull from {}: {}", thread_number, queue_name, value),
     }
 
-    return pull_result;
+    pull_result
 }
 
 fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, isize)> {
