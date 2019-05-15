@@ -20,9 +20,9 @@ pub fn get_queue_configs() -> Vec<QueueConfig> {
     queues
 }
 
-pub fn get_connection_config<'a>() -> ConnectionConfig<'a> {
+pub fn get_connection_config() -> ConnectionConfig {
     let connection_config = ConnectionConfig {
-        hostname: "command_queue_redis",
+        hostname: "command_queue_redis".to_string(),
         port: 6379,
         timeout: 3,
     };

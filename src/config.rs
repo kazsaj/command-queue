@@ -1,13 +1,13 @@
 use std::fmt;
 
 #[derive(Clone, Debug)]
-pub struct ConnectionConfig<'a> {
-    pub hostname: &'a str,
+pub struct ConnectionConfig {
+    pub hostname: String,
     pub port: usize,
     pub timeout: usize,
 }
 
-impl ConnectionConfig<'_> {
+impl ConnectionConfig {
     pub fn get_connection_string(&self) -> String {
         let prefix = "redis://";
 
@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn get_connection_string() {
         let config = ConnectionConfig {
-            hostname: "server_hostname",
+            hostname: "server_hostname".to_string(),
             port: 666,
             timeout: 3,
         };
