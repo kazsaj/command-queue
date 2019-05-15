@@ -10,11 +10,12 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 fn main() {
-    println!("Starting main thread");
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     let queues = args::get_queue_configs();
     let connection_config = args::get_connection_config();
+
+    println!("Spawning {} threads", queues.len());
 
     for i in 0..queues.len() {
         let thread_queue = queues[i].clone();
