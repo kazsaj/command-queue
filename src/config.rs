@@ -26,26 +26,24 @@ impl ConnectionConfig<'_> {
 }
 
 #[derive(Clone)]
-pub struct QueueConfig<'a> {
-    pub name: &'a str,
+pub struct QueueConfig {
+    pub name: String,
 }
 
-impl QueueConfig<'_> {
+impl QueueConfig {
     pub fn get_priority_queue_name(&self) -> String {
-        let mut queue_name = String::new();
-        queue_name.push_str(self.name);
+        let mut queue_name = self.name.clone();
         queue_name.push_str("_priority");
         return queue_name;
     }
     pub fn get_default_queue_name(&self) -> String {
-        let mut queue_name = String::new();
-        queue_name.push_str(self.name);
+        let mut queue_name = self.name.clone();
         queue_name.push_str("_default");
         return queue_name;
     }
 }
 
-impl fmt::Display for QueueConfig<'_> {
+impl fmt::Display for QueueConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "QueueConfig: {}", self.name)
     }
@@ -69,7 +67,7 @@ mod tests {
     #[test]
     fn get_queue_name() {
         let queue = QueueConfig {
-            name: "hello",
+            name: "hello".to_string(),
         };
         assert_eq!(queue.get_priority_queue_name(), "hello_priority");
         assert_eq!(queue.get_default_queue_name(), "hello_default");

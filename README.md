@@ -5,8 +5,9 @@
 - (OK) handle high priority and default priority queue
 - (OK) use a different queue name for each thread
 - (OK) use the remaining queues if the main one for the thread does not have anything to process
+- (OK) create the number of threads and queue configs based on the arguments passed  
 - read connection details from some configuration file
-- decode JSON element from a work list
+- execute individual jobs
 
 ## Useful redis commands
 - `MONITOR`
