@@ -20,19 +20,7 @@ fn main() {
         let thread_queue = queues[i].clone();
         let thread_number = i.clone();
         let thread_config = connection_config.clone();
-        let mut other_queues: Vec<QueueConfig> = Vec::new();
-
-        // remove from cloned queue list, to avoid duplicates
-        for k in 0..queues.len() {
-            if queues[k].name == thread_queue.name {
-                continue;
-            }
-            let copied_config = queues[k].clone();
-            other_queues.push(copied_config);
-        }
-
-        other_queues.shuffle(&mut thread_rng());
-
+        let other_queues = get_remaining_queues(&queues, &thread_queue);
         threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue, other_queues)));
     }
 
@@ -45,4 +33,20 @@ fn main() {
     }
 
     println!("All threads finished");
+}
+
+fn get_remaining_queues(queues: &Vec<QueueConfig>, exclude: &QueueConfig) -> Vec<QueueConfig> {
+    let mut other_queues: Vec<QueueConfig> = Vec::new();
+
+    // remove from cloned queue list, to avoid duplicates
+    for k in 0..queues.len() {
+        if queues[k].name == exclude.name {
+            continue;
+        }
+        let copied_config = queues[k].clone();
+        other_queues.push(copied_config);
+    }
+
+    other_queues.shuffle(&mut thread_rng());
+    other_queues
 }
