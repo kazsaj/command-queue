@@ -7,14 +7,15 @@ use config::QueueConfig;
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     println!("#{} using {}", thread_number, queue);
     for _i in 1..10 {
-        if pop_and_process(thread_number, &config, &queue, true) {
-            continue;
-        }
-        if pop_and_process(thread_number, &config, &queue, false) {
-            continue;
-        }
-
         for i in 0..other_queues.len() {
+            // first try to process the main queue
+            if pop_and_process(thread_number, &config, &queue, true) {
+                break;
+            }
+            if pop_and_process(thread_number, &config, &queue, false) {
+                break;
+            }
+            // nothing to process, use fall back queue
             if pop_and_process(thread_number, &config, &other_queues[i], true) {
                 break;
             }
