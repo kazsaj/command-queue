@@ -3,6 +3,7 @@ extern crate redis;
 use worker::redis::Commands;
 use config::{ConnectionConfig, QueueConfig};
 use output;
+use std::{thread, time};
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     output::info(format!("thread #{} using {}", thread_number, queue));
@@ -40,7 +41,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
 
     match pulled_value {
         Ok(value) => output::info(format!("thread #{} pulled from {}: {}", thread_number, queue_name, value.1)),
-        Err(value) => { /* do nothing, queues can be empty sometimes */ },
+        Err(_) => { /* do nothing, queues can be empty sometimes */ },
     }
 
     pull_result
@@ -49,7 +50,21 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
 /// Pop a value from a specified queue
 fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, isize)> {
     let connection_string = config.get_connection_string();
-    let client = redis::Client::open(connection_string.as_str())?;
-    let connection = client.get_connection()?;
+    let client = match redis::Client::open(connection_string.as_str()) {
+        Ok(client) => client,
+        Err(error) => {
+            output::error(format!("Could not connect to redis: {:?}", error));
+            thread::sleep(time::Duration::from_secs(180));
+            return Err(error);
+        },
+    };
+    let connection = match client.get_connection() {
+        Ok(connection) => connection,
+        Err(error) => {
+            output::warning(format!("Could not connect to redis: {:?}", error));
+            thread::sleep(time::Duration::from_secs(60));
+            return Err(error);
+        },
+    };
     connection.blpop(queue_name, config.pop_timeout)
 }
