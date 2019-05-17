@@ -7,7 +7,7 @@ use std::{thread, time};
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     output::info(format!("thread #{} using {}", thread_number, queue));
-    for _i in 1..10 {
+    loop {
         for i in 0..other_queues.len() {
             // first try to process the main queue
             if pop_and_process(thread_number, &config, &queue, true) {
