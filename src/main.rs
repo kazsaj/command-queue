@@ -33,7 +33,7 @@ fn main() {
     }
 
     signal_guard.at_exit(move |sig| {
-        output::info(format!("Signal {} received.", sig));
+        output::warning(format!("Signal {} received.", sig));
         STOP.store(true, Ordering::Release);
 
         // wait for all the threads to finish before exiting
