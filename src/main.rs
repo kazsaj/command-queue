@@ -12,12 +12,12 @@ use rand::seq::SliceRandom;
 
 fn main() {
 
-    let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     let queues = args::get_queue_configs();
     let connection_config = args::get_connection_config();
 
     output::info(format!("Spawning {} threads", queues.len()));
 
+    let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     for i in 0..queues.len() {
         let thread_queue = queues[i].clone();
         let thread_number = i.clone();
@@ -27,10 +27,10 @@ fn main() {
     }
 
     // wait for all the threads to finish before exiting
-    for j in 0..threads.len() {
+    for i in 0..threads.len() {
         match threads.pop() {
-            Some(thread) => output::info(format!("Thread {} joined {:?}", j, thread.join())),
-            None => output::error(format!("Could not pop {} thread from vector", j)),
+            Some(thread) => output::info(format!("Thread {} joined {:?}", i, thread.join())),
+            None => output::error(format!("Could not pop {} thread from vector", i)),
         }
     }
 

@@ -11,10 +11,9 @@
 - execute individual jobs
 - prepare a makefile
     - build
-    - build release
+    - build release (for alpine)
     - test
     - run
-- prepare build for alpine
 - add failed entries to a list (with datetime)
 - (OK) logging to output via a formatter somewhat matches nginx
 

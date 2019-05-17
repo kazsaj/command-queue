@@ -5,7 +5,7 @@ use config::{ConnectionConfig, QueueConfig};
 use output;
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
-    output::info(format!("#{} using {}", thread_number, queue));
+    output::info(format!("thread #{} using {}", thread_number, queue));
     for _i in 1..10 {
         for i in 0..other_queues.len() {
             // first try to process the main queue
@@ -36,7 +36,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
     let pull_result = pulled_value.is_ok();
 
     match pulled_value {
-        Ok(value) => output::info(format!("#{} pull from {}: {}", thread_number, queue_name, value.1)),
+        Ok(value) => output::info(format!("thread #{} pulled from {}: {}", thread_number, queue_name, value.1)),
         Err(value) => { /* do nothing, queues can be empty sometimes */ },
     }
 
