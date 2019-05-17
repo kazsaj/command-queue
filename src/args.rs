@@ -30,10 +30,23 @@ pub fn get_queue_configs() -> Vec<QueueConfig> {
 
 /// Returns connection configuration to Redis
 pub fn get_connection_config() -> ConnectionConfig {
+    let hostname: String = match env::var("COMMAND_QUEUE_REDIS_HOSTNAME") {
+        Ok(value) => value,
+        Err(_) => "127.0.0.1".to_string(),
+    };
+    let port: usize = match env::var("COMMAND_QUEUE_REDIS_PORT") {
+        Ok(value) => value.parse::<usize>().unwrap(),
+        Err(_) => 6379,
+    };
+    let pop_timeout: usize = match env::var("COMMAND_QUEUE_REDIS_POP_TIMEOUT") {
+        Ok(value) => value.parse::<usize>().unwrap(),
+        Err(_) => 3,
+    };
+
     let connection_config = ConnectionConfig {
-        hostname: "127.0.0.1".to_string(),
-        port: 6379,
-        timeout: 3,
+        hostname,
+        port,
+        pop_timeout,
     };
     connection_config
 }

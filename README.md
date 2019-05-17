@@ -6,7 +6,7 @@
 - (OK) use a different queue name for each thread
 - (OK) use the remaining queues if the main one for the thread does not have anything to process
 - (OK) create the number of threads and queue configs based on the arguments passed  
-- read connection details from some configuration file or env variables
+- (OK) get redis connection details from env variables
 - handle sigterm
 - execute individual jobs
 - prepare a makefile

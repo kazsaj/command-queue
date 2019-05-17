@@ -4,7 +4,7 @@ use std::fmt;
 pub struct ConnectionConfig {
     pub hostname: String,
     pub port: usize,
-    pub timeout: usize,
+    pub pop_timeout: usize,
 }
 
 impl ConnectionConfig {
@@ -59,7 +59,7 @@ mod tests {
         let config = ConnectionConfig {
             hostname: "server_hostname".to_string(),
             port: 666,
-            timeout: 3,
+            pop_timeout: 3,
         };
         assert_eq!(config.get_connection_string(), "redis://server_hostname:666");
     }
