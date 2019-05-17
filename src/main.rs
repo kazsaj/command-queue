@@ -20,7 +20,7 @@ fn main() {
     let connection_config = args::get_connection_config();
     let signal_guard = SignalGuard::new();
 
-    output::info(format!("Spawning {} threads", queues.len()));
+    output::info(format!("Spawning {} threads using {}", queues.len(), connection_config));
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     for i in 0..queues.len() {

@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ConnectionConfig {
     pub hostname: String,
     pub port: usize,
@@ -22,6 +22,12 @@ impl ConnectionConfig {
         }
 
         connection_string
+    }
+}
+
+impl fmt::Display for ConnectionConfig {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "ConnectionConfig: {} with pop_timeout: {}", self.get_connection_string(), self.pop_timeout)
     }
 }
 
