@@ -21,6 +21,7 @@ fn main() {
         let thread_queue = queues[i].clone();
         let thread_number = i.clone();
         let thread_config = connection_config.clone();
+        // remove instance of the thread queue from the list, to avoid trying to process it twice
         let other_queues = get_remaining_queues(&queues, &thread_queue);
         threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue, other_queues)));
     }
@@ -40,7 +41,6 @@ fn main() {
 fn get_remaining_queues(queues: &Vec<QueueConfig>, exclude: &QueueConfig) -> Vec<QueueConfig> {
     let mut other_queues: Vec<QueueConfig> = Vec::new();
 
-    // remove from cloned queue list, to avoid duplicates
     for k in 0..queues.len() {
         if queues[k].name == exclude.name {
             continue;
