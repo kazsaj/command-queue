@@ -11,11 +11,12 @@
 - execute individual jobs
 - prepare a makefile
     - build
+    - build release
     - test
     - run
 - prepare build for alpine
 - add failed entries to a list (with datetime)
-- logging to output via a formatter that matches nginx or supervisord
+- (OK) logging to output via a formatter somewhat matches nginx
 
 ## Useful redis commands
 - `MONITOR`
