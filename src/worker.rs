@@ -2,12 +2,13 @@ extern crate redis;
 
 use worker::redis::Commands;
 use config::{ConnectionConfig, QueueConfig};
-use output;
+use ::{output, STOP};
 use std::{thread, time};
+use std::sync::atomic::Ordering;
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     output::info(format!("thread #{} using {}", thread_number, queue));
-    loop {
+    while !STOP.load(Ordering::Acquire) {
         for i in 0..other_queues.len() {
             // first try to process the main queue
             if pop_and_process(thread_number, &config, &queue, true) {
@@ -29,8 +30,12 @@ pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, 
 
 /// Pop a value from the specified queue and then try to process it
 ///
-/// Returns true if queue had any value to process
+/// Returns true if queue had any value to process or if STOP was set
 fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &QueueConfig, priority: bool) -> bool {
+    if STOP.load(Ordering::Acquire) {
+        return true;
+    }
+
     let queue_name = match priority {
         true => queue.get_priority_queue_name(),
         false => queue.get_default_queue_name(),

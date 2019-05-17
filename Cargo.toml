@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["kazsaj <ksajkowski@gmail.com>"]
 
 [dependencies]
+graceful = "0.1.1"
 rand = "0.6.5"
 redis = "0.10.0"

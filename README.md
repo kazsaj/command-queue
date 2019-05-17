@@ -8,7 +8,7 @@
 - (OK) create the number of threads and queue configs based on the arguments passed  
 - (OK) get redis connection details from env variables
 - (OK) handle redis connection errors
-- handle sigterm
+- (OK) handle sigterm
 - execute individual jobs
 - prepare a makefile
     - build

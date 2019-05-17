@@ -1,3 +1,4 @@
+extern crate graceful;
 extern crate rand;
 
 mod args;
@@ -5,14 +6,19 @@ mod config;
 mod output;
 mod worker;
 
-use std::thread;
 use config::QueueConfig;
+use graceful::SignalGuard;
+use std::thread;
+use std::sync::atomic::{AtomicBool, Ordering};
 use rand::thread_rng;
 use rand::seq::SliceRandom;
+
+static STOP: AtomicBool = AtomicBool::new(false);
 
 fn main() {
     let queues = args::get_queue_configs();
     let connection_config = args::get_connection_config();
+    let signal_guard = SignalGuard::new();
 
     output::info(format!("Spawning {} threads", queues.len()));
 
@@ -26,15 +32,20 @@ fn main() {
         threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue, other_queues)));
     }
 
-    // wait for all the threads to finish before exiting
-    for i in 0..threads.len() {
-        match threads.pop() {
-            Some(thread) => output::info(format!("Thread {} joined {:?}", i, thread.join())),
-            None => output::error(format!("Could not pop {} thread from vector", i)),
-        }
-    }
+    signal_guard.at_exit(move |sig| {
+        output::info(format!("Signal {} received.", sig));
+        STOP.store(true, Ordering::Release);
 
-    output::info(format!("All threads finished"));
+        // wait for all the threads to finish before exiting
+        for i in 0..threads.len() {
+            match threads.pop() {
+                Some(thread) => output::info(format!("Thread {} joined {:?}", i, thread.join())),
+                None => output::error(format!("Could not pop {} thread from vector", i)),
+            }
+        }
+
+        output::info(format!("All threads finished"));
+    });
 }
 
 /// Returns a vector including all QueueConfigs except the one specified as the second param
