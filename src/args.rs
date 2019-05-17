@@ -22,7 +22,7 @@ pub fn get_queue_configs() -> Vec<QueueConfig> {
 
 pub fn get_connection_config() -> ConnectionConfig {
     let connection_config = ConnectionConfig {
-        hostname: "command_queue_redis".to_string(),
+        hostname: "127.0.0.1".to_string(),
         port: 6379,
         timeout: 3,
     };
