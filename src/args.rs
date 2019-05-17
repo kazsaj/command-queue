@@ -3,6 +3,9 @@ use config::{QueueConfig, ConnectionConfig};
 use std::process::exit;
 use output;
 
+/// Returns a vector with all the QueueConfigs that have been passed as arguments
+///
+/// Will exit if no queues have been specified.
 pub fn get_queue_configs() -> Vec<QueueConfig> {
     let mut queues: Vec<QueueConfig> = Vec::new();
 
@@ -25,6 +28,7 @@ pub fn get_queue_configs() -> Vec<QueueConfig> {
     queues
 }
 
+/// Returns connection configuration to Redis
 pub fn get_connection_config() -> ConnectionConfig {
     let connection_config = ConnectionConfig {
         hostname: "127.0.0.1".to_string(),
@@ -34,6 +38,7 @@ pub fn get_connection_config() -> ConnectionConfig {
     connection_config
 }
 
+/// Display generic help message
 fn display_help() {
     println!("command-queue QUEUE_NAME [QUEUE_NAME...]");
 }

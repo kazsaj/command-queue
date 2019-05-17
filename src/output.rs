@@ -6,21 +6,25 @@ enum LogLevel {
     Info,
 }
 
+/// Generate "error" level output with the specified message
 pub fn error(message: String)
 {
     output(message, LogLevel::Error);
 }
 
+/// Generate "warning" level output with the specified message
 pub fn warning(message: String)
 {
     output(message, LogLevel::Warning);
 }
 
+/// Generate "info" level output with the specified message
 pub fn info(message: String)
 {
     output(message, LogLevel::Info);
 }
 
+/// Generic implementation for the output builder
 fn output(message: String, level: LogLevel)
 {
     let level_test = match level {

@@ -11,7 +11,6 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 fn main() {
-
     let queues = args::get_queue_configs();
     let connection_config = args::get_connection_config();
 
@@ -37,6 +36,7 @@ fn main() {
     output::info(format!("All threads finished"));
 }
 
+/// Returns a vector including all QueueConfigs except the one specified as the second param
 fn get_remaining_queues(queues: &Vec<QueueConfig>, exclude: &QueueConfig) -> Vec<QueueConfig> {
     let mut other_queues: Vec<QueueConfig> = Vec::new();
 

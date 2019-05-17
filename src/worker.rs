@@ -26,6 +26,9 @@ pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, 
     }
 }
 
+/// Pop a value from the specified queue and then try to process it
+///
+/// Returns true if queue had any value to process
 fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &QueueConfig, priority: bool) -> bool {
     let queue_name = match priority {
         true => queue.get_priority_queue_name(),
@@ -43,6 +46,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
     pull_result
 }
 
+/// Pop a value from a specified queue
 fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, isize)> {
     let connection_string = config.get_connection_string();
     let client = redis::Client::open(connection_string.as_str())?;
