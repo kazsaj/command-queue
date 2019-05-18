@@ -5,6 +5,7 @@ use config::{ConnectionConfig, QueueConfig};
 use ::{output, STOP};
 use std::{thread, time};
 use std::sync::atomic::Ordering;
+use std::process::Command;
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     output::info(format!("thread #{} using {}", thread_number, queue));
@@ -42,18 +43,38 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
     };
 
     let pulled_value = pop_from_queue(&config, &queue_name);
-    let pull_result = pulled_value.is_ok();
-
-    match pulled_value {
-        Ok(value) => output::info(format!("thread #{} pulled from {}: {}", thread_number, queue_name, value.1)),
-        Err(_) => { /* do nothing, queues can be empty sometimes */ },
+    if !pulled_value.is_ok() {
+        // wasn't able to pull anything that we can process
+        return false;
     }
 
-    pull_result
+    let raw_command = pulled_value.unwrap().1;
+    let sleep: u64 = 60;
+    let attempts: usize = 3;
+
+    for i in 0..attempts {
+        let command_output = Command::new("sh")
+            .arg("-c")
+            .arg(raw_command.clone())
+            .output()
+            .expect("failed to execute process");
+
+        if command_output.status.success() {
+            output::info(format!("thread #{} pulled from {} OK#{} run for {}", thread_number, queue_name, i, raw_command));
+            return true;
+        }
+
+        output::warning(format!("thread #{} pulled from {} Err#{} run for {}", thread_number, queue_name, i, raw_command));
+        thread::sleep(time::Duration::from_secs(sleep));
+    }
+
+    // todo move to error list here
+
+    true
 }
 
 /// Pop a value from a specified queue
-fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, isize)> {
+fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, String)> {
     let connection_string = config.get_connection_string();
     let client = match redis::Client::open(connection_string.as_str()) {
         Ok(client) => client,

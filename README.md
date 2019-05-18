@@ -45,7 +45,7 @@ command-queue alpha alpha bravo charlie
 - (OK) get redis connection details from env variables
 - (OK) handle redis connection errors
 - (OK) handle sigterm
-- execute individual jobs
+- (OK) execute individual jobs
 - prepare a makefile
     - build
     - build release (for alpine)
