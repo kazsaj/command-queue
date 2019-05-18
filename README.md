@@ -46,10 +46,11 @@ command-queue alpha alpha bravo charlie
 - (OK) handle redis connection errors
 - (OK) handle sigterm
 - (OK) execute individual jobs
+- (OK) logging to output via a formatter somewhat matches nginx
+- fix issues with running a single thread only
+- add failed entries to a list (with datetime)
 - prepare a makefile
     - build
     - build release (for alpine)
     - test
     - run
-- add failed entries to a list (with datetime)
-- (OK) logging to output via a formatter somewhat matches nginx
