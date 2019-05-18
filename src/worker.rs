@@ -49,7 +49,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
     }
 
     let raw_command = pulled_value.unwrap().1;
-    let sleep: u64 = 60;
+    let sleep: u64 = 31;
     let attempts: usize = 3;
 
     for i in 0..attempts {
@@ -60,11 +60,17 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
             .expect("failed to execute process");
 
         if command_output.status.success() {
-            output::info(format!("thread #{} pulled from {} OK#{} run for {}", thread_number, queue_name, i, raw_command));
+            output::info(format!("thread #{} pulled from {} OK#{}: {}", thread_number, queue_name, i, raw_command));
             return true;
         }
 
-        output::warning(format!("thread #{} pulled from {} Err#{} run for {}", thread_number, queue_name, i, raw_command));
+        output::warning(format!("thread #{} pulled from {} Err#{}: {}", thread_number, queue_name, i, raw_command));
+
+        // sigterm received, better gracefully exit than retry
+        if STOP.load(Ordering::Acquire) {
+            break;
+        }
+
         thread::sleep(time::Duration::from_secs(sleep));
     }
 
