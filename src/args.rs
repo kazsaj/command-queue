@@ -1,5 +1,5 @@
 use std::env;
-use config::{QueueConfig, ConnectionConfig};
+use config::{QueueConfig, EnvConfig};
 use std::process::exit;
 use output;
 
@@ -29,7 +29,7 @@ pub fn get_queue_configs() -> Vec<QueueConfig> {
 }
 
 /// Returns connection configuration to Redis
-pub fn get_connection_config() -> ConnectionConfig {
+pub fn get_env_config() -> EnvConfig {
     let hostname: String = match env::var("COMMAND_QUEUE_REDIS_HOSTNAME") {
         Ok(value) => value,
         Err(_) => "127.0.0.1".to_string(),
@@ -42,13 +42,23 @@ pub fn get_connection_config() -> ConnectionConfig {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 3,
     };
+    let retry_sleep: u64 = match env::var("COMMAND_QUEUE_RETRY_SLEEP") {
+        Ok(value) => value.parse::<u64>().unwrap(),
+        Err(_) => 31,
+    };
+    let retry_limit: usize = match env::var("COMMAND_QUEUE_RETRY_LIMIT") {
+        Ok(value) => value.parse::<usize>().unwrap(),
+        Err(_) => 3,
+    };
 
-    let connection_config = ConnectionConfig {
+    let env_config = EnvConfig {
         hostname,
         port,
         pop_timeout,
+        retry_sleep,
+        retry_limit,
     };
-    connection_config
+    env_config
 }
 
 /// Display generic help message

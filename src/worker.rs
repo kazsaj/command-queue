@@ -1,28 +1,28 @@
 extern crate redis;
 
 use worker::redis::Commands;
-use config::{ConnectionConfig, QueueConfig};
+use config::{EnvConfig, QueueConfig};
 use ::{output, STOP};
 use std::{thread, time};
 use std::sync::atomic::Ordering;
 use std::process::Command;
 
-pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
+pub fn main(thread_number: usize, env_config: EnvConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
     output::info(format!("T#{} spawned using {}", thread_number, queue));
     while !STOP.load(Ordering::Acquire) {
         for i in 0..other_queues.len() {
             // first try to process the main queue
-            if pop_and_process(thread_number, &config, &queue, true) {
+            if pop_and_process(thread_number, &env_config, &queue, true) {
                 break;
             }
-            if pop_and_process(thread_number, &config, &queue, false) {
+            if pop_and_process(thread_number, &env_config, &queue, false) {
                 break;
             }
             // nothing to process, use fall back queue
-            if pop_and_process(thread_number, &config, &other_queues[i], true) {
+            if pop_and_process(thread_number, &env_config, &other_queues[i], true) {
                 break;
             }
-            if pop_and_process(thread_number, &config, &other_queues[i], false) {
+            if pop_and_process(thread_number, &env_config, &other_queues[i], false) {
                 break;
             }
         }
@@ -32,7 +32,7 @@ pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, 
 /// Pop a value from the specified queue and then try to process it
 ///
 /// Returns true if queue had any value to process or if STOP was set
-fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &QueueConfig, priority: bool) -> bool {
+fn pop_and_process(thread_number: usize, env_config: &EnvConfig, queue: &QueueConfig, priority: bool) -> bool {
     if STOP.load(Ordering::Acquire) {
         return true;
     }
@@ -42,17 +42,15 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
         false => queue.get_default_queue_name(),
     };
 
-    let pulled_value = pop_from_queue(&config, &queue_name);
+    let pulled_value = pop_from_queue(&env_config, &queue_name);
     if !pulled_value.is_ok() {
         // wasn't able to pull anything that we can process
         return false;
     }
 
     let raw_command = pulled_value.unwrap().1;
-    let sleep: u64 = 31;
-    let attempts: usize = 3;
 
-    for i in 1..attempts+1 {
+    for i in 1..env_config.retry_limit+1 {
         let command_output = Command::new("sh")
             .arg("-c")
             .arg(raw_command.clone())
@@ -71,15 +69,15 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
             break;
         }
 
-        if i != attempts {
+        if i != env_config.retry_limit {
             // only sleep if it's not the last attempt
-            thread::sleep(time::Duration::from_secs(sleep));
+            thread::sleep(time::Duration::from_secs(env_config.retry_sleep));
         }
     }
 
     let error_queue_name = queue.get_error_queue_name();
     output::error(format!("T#{} too many errors, adding to {}: {}", thread_number, error_queue_name, raw_command));
-    match push_to_queue(config, &error_queue_name, raw_command.clone()) {
+    match push_to_queue(env_config, &error_queue_name, raw_command.clone()) {
         Ok(_) => {},
         Err(error) => output::error(format!("Could not add \"{}\" to {}: {:?}", raw_command, error_queue_name, error)),
     };
@@ -88,8 +86,8 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
 }
 
 /// Pop a value from a specified queue
-fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::RedisResult<(String, String)> {
-    let connection_string = config.get_connection_string();
+fn pop_from_queue(env_config: &EnvConfig, queue_name: &String) -> redis::RedisResult<(String, String)> {
+    let connection_string = env_config.get_connection_string();
     let client = match redis::Client::open(connection_string.as_str()) {
         Ok(client) => client,
         Err(error) => {
@@ -106,11 +104,11 @@ fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::Redi
             return Err(error);
         },
     };
-    connection.blpop(queue_name, config.pop_timeout)
+    connection.blpop(queue_name, env_config.pop_timeout)
 }
 
-fn push_to_queue(config: &ConnectionConfig, queue_name: &String, data: String) -> redis::RedisResult<usize> {
-    let connection_string = config.get_connection_string();
+fn push_to_queue(env_config: &EnvConfig, queue_name: &String, data: String) -> redis::RedisResult<usize> {
+    let connection_string = env_config.get_connection_string();
     let client = match redis::Client::open(connection_string.as_str()) {
         Ok(client) => client,
         Err(error) => {

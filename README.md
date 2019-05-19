@@ -6,6 +6,8 @@ Command Queue is a simple queue processor which will execute any (shell) command
 - `COMMAND_QUEUE_REDIS_HOSTNAME` - to what hostname should it connect to
 - `COMMAND_QUEUE_REDIS_PORT` - what port should it use when connecting
 - `COMMAND_QUEUE_REDIS_POP_TIMEOUT` - how long should it wait between each redis blocking pop commands
+- `COMMAND_QUEUE_RETRY_SLEEP` - how long should it wait between each attempt to process a command
+- `COMMAND_QUEUE_RETRY_LIMIT` - how many times should it retry to process a command (failure = returning non-zero response)
 
 ## Arguments
 

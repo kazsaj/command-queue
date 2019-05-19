@@ -1,13 +1,15 @@
 use std::fmt;
 
 #[derive(Clone)]
-pub struct ConnectionConfig {
+pub struct EnvConfig {
     pub hostname: String,
     pub port: usize,
     pub pop_timeout: usize,
+    pub retry_sleep: u64,
+    pub retry_limit: usize,
 }
 
-impl ConnectionConfig {
+impl EnvConfig {
     pub fn get_connection_string(&self) -> String {
         let prefix = "redis://";
 
@@ -25,7 +27,7 @@ impl ConnectionConfig {
     }
 }
 
-impl fmt::Display for ConnectionConfig {
+impl fmt::Display for EnvConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "ConnectionConfig: {} with pop_timeout: {}", self.get_connection_string(), self.pop_timeout)
     }
@@ -62,15 +64,17 @@ impl fmt::Display for QueueConfig {
 
 #[cfg(test)]
 mod tests {
-    use config::ConnectionConfig;
+    use config::EnvConfig;
     use config::QueueConfig;
 
     #[test]
     fn get_connection_string() {
-        let config = ConnectionConfig {
+        let config = EnvConfig {
             hostname: "server_hostname".to_string(),
             port: 666,
             pop_timeout: 3,
+            retry_sleep: 31,
+            retry_limit: 3,
         };
         assert_eq!(config.get_connection_string(), "redis://server_hostname:666");
     }

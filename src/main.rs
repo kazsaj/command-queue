@@ -17,16 +17,16 @@ static STOP: AtomicBool = AtomicBool::new(false);
 
 fn main() {
     let queues = args::get_queue_configs();
-    let connection_config = args::get_connection_config();
+    let env_config = args::get_env_config();
     let signal_guard = SignalGuard::new();
 
-    output::info(format!("Spawning {} threads using {}", queues.len(), connection_config));
+    output::info(format!("Spawning {} threads using {}", queues.len(), env_config));
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     for i in 0..queues.len() {
         let thread_queue = queues[i].clone();
         let thread_number = i.clone();
-        let thread_config = connection_config.clone();
+        let thread_config = env_config.clone();
         // remove instance of the thread queue from the list, to avoid trying to process it twice
         let other_queues = get_remaining_queues(&queues, &thread_queue);
         threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue, other_queues)));
