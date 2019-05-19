@@ -47,6 +47,11 @@ impl QueueConfig {
         queue_name.push_str("_default");
         queue_name
     }
+    pub fn get_error_queue_name(&self) -> String {
+        let mut queue_name = self.name.clone();
+        queue_name.push_str("_error");
+        queue_name
+    }
 }
 
 impl fmt::Display for QueueConfig {
@@ -77,5 +82,6 @@ mod tests {
         };
         assert_eq!(queue.get_priority_queue_name(), "hello_priority");
         assert_eq!(queue.get_default_queue_name(), "hello_default");
+        assert_eq!(queue.get_error_queue_name(), "hello_error");
     }
 }

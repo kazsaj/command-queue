@@ -52,7 +52,7 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
     let sleep: u64 = 31;
     let attempts: usize = 3;
 
-    for i in 0..attempts {
+    for i in 1..attempts+1 {
         let command_output = Command::new("sh")
             .arg("-c")
             .arg(raw_command.clone())
@@ -71,10 +71,18 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
             break;
         }
 
-        thread::sleep(time::Duration::from_secs(sleep));
+        if i != attempts {
+            // only sleep if it's not the last attempt
+            thread::sleep(time::Duration::from_secs(sleep));
+        }
     }
 
-    // todo move to error list here
+    let error_queue_name = queue.get_error_queue_name();
+    output::error(format!("T#{} too many errors, adding to {}: {}", thread_number, error_queue_name, raw_command));
+    match push_to_queue(config, &error_queue_name, raw_command.clone()) {
+        Ok(_) => {},
+        Err(error) => output::error(format!("Could not add \"{}\" to {}: {:?}", raw_command, error_queue_name, error)),
+    };
 
     true
 }
@@ -99,4 +107,21 @@ fn pop_from_queue(config: &ConnectionConfig, queue_name: &String) -> redis::Redi
         },
     };
     connection.blpop(queue_name, config.pop_timeout)
+}
+
+fn push_to_queue(config: &ConnectionConfig, queue_name: &String, data: String) -> redis::RedisResult<usize> {
+    let connection_string = config.get_connection_string();
+    let client = match redis::Client::open(connection_string.as_str()) {
+        Ok(client) => client,
+        Err(error) => {
+            return Err(error);
+        },
+    };
+    let connection = match client.get_connection() {
+        Ok(connection) => connection,
+        Err(error) => {
+            return Err(error);
+        },
+    };
+    connection.rpush(queue_name, data)
 }
