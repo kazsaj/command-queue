@@ -39,8 +39,8 @@ fn main() {
         // wait for all the threads to finish before exiting
         for i in 0..threads.len() {
             match threads.pop() {
-                Some(thread) => output::info(format!("Thread {} joined {:?}", i, thread.join())),
-                None => output::error(format!("Could not pop {} thread from vector", i)),
+                Some(_) => output::info(format!("T#{} finished", i)),
+                None => output::error(format!("T#{} failed to join", i)),
             }
         }
 

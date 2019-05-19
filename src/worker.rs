@@ -8,7 +8,7 @@ use std::sync::atomic::Ordering;
 use std::process::Command;
 
 pub fn main(thread_number: usize, config: ConnectionConfig, queue: QueueConfig, other_queues: Vec<QueueConfig>) {
-    output::info(format!("thread #{} using {}", thread_number, queue));
+    output::info(format!("T#{} spawned using {}", thread_number, queue));
     while !STOP.load(Ordering::Acquire) {
         for i in 0..other_queues.len() {
             // first try to process the main queue
@@ -60,11 +60,11 @@ fn pop_and_process(thread_number: usize, config: &ConnectionConfig, queue: &Queu
             .expect("failed to execute process");
 
         if command_output.status.success() {
-            output::info(format!("thread #{} pulled from {} OK#{}: {}", thread_number, queue_name, i, raw_command));
+            output::info(format!("T#{} pulled from {} OK#{}: {}", thread_number, queue_name, i, raw_command));
             return true;
         }
 
-        output::warning(format!("thread #{} pulled from {} Err#{}: {}", thread_number, queue_name, i, raw_command));
+        output::warning(format!("T#{} pulled from {} Err#{}: {}", thread_number, queue_name, i, raw_command));
 
         // sigterm received, better gracefully exit than retry
         if STOP.load(Ordering::Acquire) {
