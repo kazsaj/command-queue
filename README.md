@@ -23,16 +23,15 @@ command-queue alpha bravo charlie
 
 You can pass the same queue name multiple times, to have multiple threads pull from the same queue.
 
-
 ```bash
 command-queue alpha alpha bravo charlie
 ```
 
 ## Useful redis commands
-- `MONITOR`
+- `MONITOR` - watch for any commands executed on the server, useful for debugging
 - `RPUSH key value [value]` - add element to the list
     ```
-    rpush queue 1333 888333 11223 88833 272 4891 7219 489 71 1 2 3 4 5 6 7 8 9 10 11 12 13
+    rpush alpha_priority "echo hello" "ls -l" "false"
     ```
 - `BLPOP key` - remove first element from a list, or block until you find one
 
