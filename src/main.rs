@@ -8,10 +8,10 @@ mod worker;
 
 use config::QueueConfig;
 use graceful::SignalGuard;
-use std::thread;
-use std::sync::atomic::{AtomicBool, Ordering};
-use rand::thread_rng;
 use rand::seq::SliceRandom;
+use rand::thread_rng;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::thread;
 
 static STOP: AtomicBool = AtomicBool::new(false);
 
@@ -20,7 +20,11 @@ fn main() {
     let env_config = args::get_env_config();
     let signal_guard = SignalGuard::new();
 
-    output::info(format!("Spawning {} threads using {}", queues.len(), env_config));
+    output::info(format!(
+        "Spawning {} threads using {}",
+        queues.len(),
+        env_config
+    ));
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     for i in 0..queues.len() {
@@ -29,7 +33,9 @@ fn main() {
         let thread_config = env_config.clone();
         // remove instance of the thread queue from the list, to avoid trying to process it twice
         let other_queues = get_remaining_queues(&queues, &thread_queue);
-        threads.push(thread::spawn(move || worker::main(thread_number, thread_config, thread_queue, other_queues)));
+        threads.push(thread::spawn(move || {
+            worker::main(thread_number, thread_config, thread_queue, other_queues)
+        }));
     }
 
     signal_guard.at_exit(move |sig| {

@@ -49,10 +49,11 @@ command-queue alpha alpha bravo charlie
 - (OK) handle sigterm
 - (OK) execute individual jobs
 - (OK) logging to output via a formatter somewhat matches nginx
+- (OK) add failed entries to a list (with datetime)
 - fix issues with running a single thread only
-- add failed entries to a list (with datetime)
 - prepare a makefile
     - build
     - build release (for alpine)
     - test
     - run
+    - format

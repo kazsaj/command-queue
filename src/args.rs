@@ -1,7 +1,7 @@
-use std::env;
-use config::{QueueConfig, EnvConfig};
-use std::process::exit;
+use config::{EnvConfig, QueueConfig};
 use output;
+use std::env;
+use std::process::exit;
 
 /// Returns a vector with all the QueueConfigs that have been passed as arguments
 ///

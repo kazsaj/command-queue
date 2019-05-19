@@ -29,7 +29,12 @@ impl EnvConfig {
 
 impl fmt::Display for EnvConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "ConnectionConfig: {} with pop_timeout: {}", self.get_connection_string(), self.pop_timeout)
+        write!(
+            f,
+            "ConnectionConfig: {} with pop_timeout: {}",
+            self.get_connection_string(),
+            self.pop_timeout
+        )
     }
 }
 
@@ -76,7 +81,10 @@ mod tests {
             retry_sleep: 31,
             retry_limit: 3,
         };
-        assert_eq!(config.get_connection_string(), "redis://server_hostname:666");
+        assert_eq!(
+            config.get_connection_string(),
+            "redis://server_hostname:666"
+        );
     }
 
     #[test]
