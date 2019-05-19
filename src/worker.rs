@@ -7,7 +7,20 @@ use std::{thread, time};
 use worker::redis::Commands;
 use {output, STOP};
 
-pub fn main(
+pub fn main_with_single(thread_number: usize, env_config: EnvConfig, queue: QueueConfig) {
+    output::info(format!("T#{} spawned using {}", thread_number, queue));
+    while !STOP.load(Ordering::Acquire) {
+        // first try to process the main queue
+        if pop_and_process(thread_number, &env_config, &queue, true) {
+            break;
+        }
+        if pop_and_process(thread_number, &env_config, &queue, false) {
+            break;
+        }
+    }
+}
+
+pub fn main_with_multiple(
     thread_number: usize,
     env_config: EnvConfig,
     queue: QueueConfig,

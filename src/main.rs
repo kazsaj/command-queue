@@ -33,9 +33,15 @@ fn main() {
         let thread_config = env_config.clone();
         // remove instance of the thread queue from the list, to avoid trying to process it twice
         let other_queues = get_remaining_queues(&queues, &thread_queue);
-        threads.push(thread::spawn(move || {
-            worker::main(thread_number, thread_config, thread_queue, other_queues)
-        }));
+        threads.push(if other_queues.len() == 0 {
+            thread::spawn(move || {
+                worker::main_with_single(thread_number, thread_config, thread_queue)
+            })
+        } else {
+            thread::spawn(move || {
+                worker::main_with_multiple(thread_number, thread_config, thread_queue, other_queues)
+            })
+        });
     }
 
     signal_guard.at_exit(move |sig| {
