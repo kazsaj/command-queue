@@ -1,46 +1,25 @@
 extern crate redis;
 
-use config::{EnvConfig, QueueConfig};
+use config::{EnvConfig, ProcessConfig};
 use std::process::Command;
 use std::sync::atomic::Ordering;
 use std::{thread, time};
 use worker::redis::Commands;
 use {output, STOP};
 
-pub fn main_with_single(thread_number: usize, env_config: EnvConfig, queue: QueueConfig) {
-    output::info(format!("T#{} spawned using {}", thread_number, queue));
-    while !STOP.load(Ordering::Acquire) {
-        // first try to process the main queue
-        if pop_and_process(thread_number, &env_config, &queue, true) {
-            continue;
-        }
-        if pop_and_process(thread_number, &env_config, &queue, false) {
-            continue;
-        }
-    }
-}
+pub fn main(thread_number: usize, env_config: EnvConfig, process_configs: Vec<ProcessConfig>) {
+    output::info(format!(
+        "T#{} spawned checking {} lists",
+        thread_number,
+        process_configs.len(),
+    ));
 
-pub fn main_with_multiple(
-    thread_number: usize,
-    env_config: EnvConfig,
-    queue: QueueConfig,
-    other_queues: Vec<QueueConfig>,
-) {
-    output::info(format!("T#{} spawned using {}", thread_number, queue));
-    while !STOP.load(Ordering::Acquire) {
-        for i in 0..other_queues.len() {
-            // first try to process the main queue
-            if pop_and_process(thread_number, &env_config, &queue, true) {
-                break;
+    loop {
+        for i in 0..process_configs.len() {
+            if STOP.load(Ordering::Acquire) {
+                return;
             }
-            if pop_and_process(thread_number, &env_config, &queue, false) {
-                break;
-            }
-            // nothing to process, use fall back queue
-            if pop_and_process(thread_number, &env_config, &other_queues[i], true) {
-                break;
-            }
-            if pop_and_process(thread_number, &env_config, &other_queues[i], false) {
+            if pop_and_process(&thread_number, &env_config, &process_configs[i]) {
                 break;
             }
         }
@@ -51,21 +30,11 @@ pub fn main_with_multiple(
 ///
 /// Returns true if queue had any value to process or if STOP was set
 fn pop_and_process(
-    thread_number: usize,
+    thread_number: &usize,
     env_config: &EnvConfig,
-    queue: &QueueConfig,
-    priority: bool,
+    process_config: &ProcessConfig,
 ) -> bool {
-    if STOP.load(Ordering::Acquire) {
-        return true;
-    }
-
-    let queue_name = match priority {
-        true => queue.get_priority_queue_name(),
-        false => queue.get_default_queue_name(),
-    };
-
-    let pulled_value = pop_from_queue(&env_config, &queue_name);
+    let pulled_value = pop_from_queue(&env_config, &process_config.pull_queue_name);
     if !pulled_value.is_ok() {
         // wasn't able to pull anything that we can process
         return false;
@@ -83,14 +52,14 @@ fn pop_and_process(
         if command_output.status.success() {
             output::info(format!(
                 "T#{} pulled from {} OK#{}: {}",
-                thread_number, queue_name, i, raw_command
+                thread_number, process_config.pull_queue_name, i, raw_command
             ));
             return true;
         }
 
         output::warning(format!(
             "T#{} pulled from {} Err#{}: {}",
-            thread_number, queue_name, i, raw_command
+            thread_number, process_config.pull_queue_name, i, raw_command
         ));
 
         // sigterm received, better gracefully exit than retry
@@ -104,16 +73,19 @@ fn pop_and_process(
         }
     }
 
-    let error_queue_name = queue.get_error_queue_name();
     output::error(format!(
         "T#{} too many errors, adding to {}: {}",
-        thread_number, error_queue_name, raw_command
+        thread_number, process_config.error_queue_name, raw_command
     ));
-    match push_to_queue(env_config, &error_queue_name, raw_command.clone()) {
+    match push_to_queue(
+        env_config,
+        &process_config.error_queue_name,
+        raw_command.clone(),
+    ) {
         Ok(_) => {}
         Err(error) => output::error(format!(
             "Could not add \"{}\" to {}: {:?}",
-            raw_command, error_queue_name, error
+            raw_command, process_config.error_queue_name, error
         )),
     };
 

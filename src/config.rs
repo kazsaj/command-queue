@@ -67,6 +67,24 @@ impl fmt::Display for QueueConfig {
     }
 }
 
+pub struct ProcessConfig {
+    pub pull_queue_name: String,
+    pub error_queue_name: String,
+}
+
+impl ProcessConfig {
+    pub fn new(queue_config: &QueueConfig, priority: bool) -> ProcessConfig {
+        ProcessConfig {
+            pull_queue_name: if priority {
+                queue_config.get_priority_queue_name()
+            } else {
+                queue_config.get_default_queue_name()
+            },
+            error_queue_name: queue_config.get_error_queue_name(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use config::EnvConfig;
