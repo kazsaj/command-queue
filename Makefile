@@ -4,6 +4,9 @@ build:
 build-release:
 	cargo build --release
 
+build-alpine-release:
+	rustup target add x86_64-unknown-linux-musl && cargo build --release --frozen --target x86_64-unknown-linux-musl
+
 test:
 	cargo test
 

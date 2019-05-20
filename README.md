@@ -60,4 +60,5 @@ command-queue alfa alfa bravo charlie
 - (OK) add failed entries to a list (with datetime)
 - (OK) fix issues with running a single thread only
 - (OK) prepare a makefile
-- makefile - build release for alpine
+- (OK) makefile - build release for alpine
+- diagram explaining how the queue works
