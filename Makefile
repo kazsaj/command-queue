@@ -8,7 +8,7 @@ test:
 	cargo test
 
 run:
-	docker-compose up -d && cargo run alfa bravo charlie
+	docker-compose up -d && cargo run alfa alfa bravo charlie
 
 redis-cli:
 	docker-compose up -d && docker exec -it command_queue_redis redis-cli
