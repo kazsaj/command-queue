@@ -42,7 +42,7 @@ fn main() {
         STOP.store(true, Ordering::Release);
 
         // wait for all the threads to finish before exiting
-        for i in 0..threads.len() {
+        for i in 1..threads.len() + 1 {
             match threads.pop() {
                 Some(_) => output::info(format!("T#{} finished", i)),
                 None => output::error(format!("T#{} failed to join", i)),
