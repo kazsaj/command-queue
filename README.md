@@ -2,6 +2,15 @@
 
 Command Queue is a simple queue processor which will execute any (shell) commands passed to the queue.
 
+**It executes anything? But, but what about security?**
+
+A bad actor would need access to your Redis instance, from which the command-queue pulls from. If that happens you're most likely more screwed than you think.
+
+## Repository requirements
+- [Rust](https://www.rust-lang.org/tools/install) (1.30 or later) and Cargo
+- Docker and Docker-compose - if you make it easier to locally test
+- Make - if you want to use the Makefile
+
 ## Environment variables
 - `COMMAND_QUEUE_REDIS_HOSTNAME` - to what hostname should it connect to
 - `COMMAND_QUEUE_REDIS_PORT` - what port should it use when connecting
@@ -18,20 +27,20 @@ command-queue queue_name [QUEUE_NAME...]
 e.g.
 
 ```bash
-command-queue alpha bravo charlie
+command-queue alfa bravo charlie
 ```
 
 You can pass the same queue name multiple times, to have multiple threads pull from the same queue.
 
 ```bash
-command-queue alpha alpha bravo charlie
+command-queue alfa alfa bravo charlie
 ```
 
 ## Useful redis commands
 - `MONITOR` - watch for any commands executed on the server, useful for debugging
 - `RPUSH key value [value]` - add element to the list
     ```
-    rpush alpha_priority "echo hello" "ls -l" "false"
+    rpush alfa_priority "echo hello" "ls -l" "false"
     ```
 - `BLPOP key` - remove first element from a list, or block until you find one
 
@@ -50,9 +59,5 @@ command-queue alpha alpha bravo charlie
 - (OK) logging to output via a formatter somewhat matches nginx
 - (OK) add failed entries to a list (with datetime)
 - (OK) fix issues with running a single thread only
-- prepare a makefile
-    - build
-    - build release (for alpine)
-    - test
-    - run
-    - format
+- (OK) prepare a makefile
+- makefile - build release for alpine
