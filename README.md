@@ -6,6 +6,13 @@ Command Queue is a simple queue processor which will execute any (shell) command
 
 A bad actor would need access to your Redis instance, from which the command-queue pulls from. If that happens you're most likely more screwed than you think.
 
+**B-but...**
+
+If it's a no-no for you, here are some of the options you have:
+- Use something else,
+- PR or fork this project to use a different processor for the data pulled in from the redis,
+- sandbox the environment the command-queue runs in (don't run it as root, limit network access, stuff it in a dedicated VM or docker container).
+
 ## Features
 - Pull commands from Redis lists and execute them (FIFO) in the same context as this binary runs
 - Uses multiple threads to pull from lists and can run multiple threads for the same list as well
