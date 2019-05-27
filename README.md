@@ -17,20 +17,20 @@ If it's a no-no for you, here are some of the options you have:
 - Pull commands from Redis lists and execute them (FIFO) in the same context as this binary runs
 - Uses multiple threads to pull from lists and can run multiple threads for the same list as well
 - If a thread does not have anything to process, it will pull from the other lists (if multiple lists were set up), to avoid them sitting idle
-- On execution failure run `n` (default: 3) times before giving up on the failing task and moving it to an "error" list
+- On execution failure run `n` times (default: 3) before giving up on the failing task and moving it to an "error" list
 - Wait `m` seconds (default: 31) between each retry attempt
 
 ## Environment variables
 - `COMMAND_QUEUE_REDIS_HOSTNAME` - hostname of the redis instance to connect to (default: 127.0.0.1)
 - `COMMAND_QUEUE_REDIS_PORT` - port of the redis instance (default: 6379)
-- `COMMAND_QUEUE_REDIS_POP_TIMEOUT` - how long should it wait between each redis blocking pop commands (default: 3)
-- `COMMAND_QUEUE_RETRY_SLEEP` - how long should it wait between each attempt to process a command (default: 31)
+- `COMMAND_QUEUE_REDIS_POP_TIMEOUT` - how long (in seconds) should it wait during each redis blocking pop command (default: 3)
+- `COMMAND_QUEUE_RETRY_SLEEP` - how long (in seconds) should it wait between each retry attempt to process a command (default: 31)
 - `COMMAND_QUEUE_RETRY_LIMIT` - how many times should it retry to process a command (failure = returning non-zero response, default 3)
 
 ## Arguments
 
 ```bash
-command-queue queue_name [QUEUE_NAME...]
+command-queue QUEUE_NAME [QUEUE_NAME...]
 ```
 
 e.g.
@@ -47,8 +47,8 @@ command-queue alfa alfa bravo charlie
 
 ## Repository build requirements
 - [Rust](https://www.rust-lang.org/tools/install) (1.30 or later) and Cargo
-- Docker and Docker-compose - if you make it easier to locally test
-- Make - if you want to use the Makefile
+- Docker and Docker-compose - which will bring up a local redis instance, useful for testing
+- Make - if you want to use the Makefile commands
 
 ## Useful redis commands
 - `MONITOR` - watch for any commands executed on the server, useful for debugging
