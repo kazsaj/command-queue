@@ -11,18 +11,7 @@ pub struct EnvConfig {
 
 impl EnvConfig {
     pub fn get_connection_string(&self) -> String {
-        let prefix = "redis://";
-
-        let mut connection_string = String::new();
-        connection_string.push_str(prefix);
-        connection_string.push_str(&self.hostname);
-
-        if self.port > 0 {
-            let port_number = self.port.to_string();
-            connection_string.push_str(":");
-            connection_string.push_str(port_number.as_str());
-        }
-
+        let connection_string: String = format!("redis://{}:{}", self.hostname, self.port);
         connection_string
     }
 }
