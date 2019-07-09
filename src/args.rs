@@ -47,7 +47,10 @@ pub fn get_env_config() -> EnvConfig {
         Err(_) => 31,
     };
     let retry_limit: usize = match env::var("COMMAND_QUEUE_RETRY_LIMIT") {
-        Ok(value) => value.parse::<usize>().unwrap(),
+        Ok(value) => match value.parse::<usize>().unwrap() {
+            0 => panic!("COMMAND_QUEUE_RETRY_LIMIT needs to be higher or equal to 1"),
+            value => value,
+        },
         Err(_) => 3,
     };
 
