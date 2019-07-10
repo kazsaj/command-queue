@@ -42,7 +42,7 @@ fn pop_and_process(
 
     let raw_command = pulled_value.unwrap().1;
 
-    for i in 1..env_config.retry_limit + 1 {
+    for i in 1..env_config.retry_limit + 2 {
         let command_output = Command::new("sh")
             .arg("-c")
             .arg(raw_command.clone())
