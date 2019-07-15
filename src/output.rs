@@ -4,6 +4,7 @@ enum LogLevel {
     Error,
     Warning,
     Info,
+    Debug,
 }
 
 /// Generate "error" level output with the specified message
@@ -21,12 +22,18 @@ pub fn info(message: String) {
     output(message, LogLevel::Info);
 }
 
+/// Generate "debug" level output with the specified message
+pub fn debug(message: String) {
+    output(message, LogLevel::Debug);
+}
+
 /// Generic implementation for the output builder
 fn output(message: String, level: LogLevel) {
     let level_test = match level {
         LogLevel::Error => "ERROR",
         LogLevel::Warning => "WARNING",
         LogLevel::Info => "INFO",
+        LogLevel::Debug => "DEBUG",
     };
 
     let timestamp = match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {

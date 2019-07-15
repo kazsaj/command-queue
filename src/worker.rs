@@ -42,6 +42,11 @@ fn pop_and_process(
 
     let raw_command = pulled_value.unwrap().1;
 
+    output::debug(format!(
+        "T#{} pulled from {}: {}",
+        thread_number, process_config.pull_queue_name, raw_command
+    ));
+
     for i in 1..env_config.retry_limit + 2 {
         let command_output = Command::new("sh")
             .arg("-c")
@@ -51,14 +56,14 @@ fn pop_and_process(
 
         if command_output.status.success() {
             output::info(format!(
-                "T#{} pulled from {} OK#{}: {}",
+                "T#{} execute result for {} OK#{}: {}",
                 thread_number, process_config.pull_queue_name, i, raw_command
             ));
             return true;
         }
 
         output::warning(format!(
-            "T#{} pulled from {} Err#{}: {}",
+            "T#{} execute result for {} Err#{}: {}",
             thread_number, process_config.pull_queue_name, i, raw_command
         ));
 
