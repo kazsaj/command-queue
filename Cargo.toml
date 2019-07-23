@@ -1,6 +1,6 @@
 [package]
 name = "command-queue"
-version = "0.1.1"
+version = "0.3.0"
 authors = ["kazsaj <ksajkowski@gmail.com>"]
 
 [dependencies]
