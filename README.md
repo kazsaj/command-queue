@@ -26,7 +26,7 @@ If it's a no-no for you, here are some of the options you have:
 - `COMMAND_QUEUE_REDIS_POP_TIMEOUT` - how long (in seconds) should it wait during each redis blocking pop command (default: 3)
 - `COMMAND_QUEUE_RETRY_SLEEP` - how long (in seconds) should it wait between each retry attempt to process a command (default: 31)
 - `COMMAND_QUEUE_RETRY_LIMIT` - how many times should it retry to process a command (failure = returning non-zero response). This number represents any additional attempts running the command, besides the original one (default: 2)
-
+- `COMMAND_QUEUE_LOG_LEVEL` - what level of log messages should be shown, supported levels: `ERROR`, `WARNING`, `INFO`, `DEBUG` (default `INFO`)
 ## Arguments
 
 ```bash

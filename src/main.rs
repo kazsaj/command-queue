@@ -16,11 +16,12 @@ use std::thread;
 static STOP: AtomicBool = AtomicBool::new(false);
 
 fn main() {
-    let queues = args::get_queue_configs();
+    let logger = args::get_logger();
+    let queues = args::get_queue_configs(&logger);
     let env_config = args::get_env_config();
     let signal_guard = SignalGuard::new();
 
-    output::info(format!(
+    logger.info(format!(
         "Spawning {} threads using {}",
         queues.len(),
         env_config
@@ -28,28 +29,29 @@ fn main() {
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();
     for i in 0..queues.len() {
+        let thread_logger = logger.clone();
         let thread_queue = queues[i].clone();
         let thread_config = env_config.clone();
         let thread_process_configs = get_process_configs(&queues, thread_queue);
 
         threads.push(thread::spawn(move || {
-            worker::main(i + 1, thread_config, thread_process_configs)
+            worker::main(i + 1, thread_logger, thread_config, thread_process_configs)
         }));
     }
 
     signal_guard.at_exit(move |sig| {
-        output::warning(format!("Signal {} received.", sig));
+        logger.warning(format!("Signal {} received.", sig));
         STOP.store(true, Ordering::Release);
 
         // wait for all the threads to finish before exiting
         for i in 1..threads.len() + 1 {
             match threads.pop() {
-                Some(_) => output::info(format!("T#{} finished", i)),
-                None => output::error(format!("T#{} failed to join", i)),
+                Some(_) => logger.info(format!("T#{} finished", i)),
+                None => logger.error(format!("T#{} failed to join", i)),
             }
         }
 
-        output::info(format!("All threads finished"));
+        logger.info(format!("All threads finished"));
     });
 }
 

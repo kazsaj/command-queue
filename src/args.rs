@@ -1,17 +1,35 @@
 use config::{EnvConfig, QueueConfig};
-use output;
+use output::{LogLevel, Logger};
 use std::env;
 use std::process::exit;
+
+/// Generate a logger based on the environment variable
+pub fn get_logger() -> Logger {
+    let default_log_level: LogLevel = LogLevel::Info;
+    Logger {
+        log_level: match env::var("COMMAND_QUEUE_LOG_LEVEL") {
+            Ok(value) => match value.to_ascii_uppercase().as_str() {
+                "ERROR" => LogLevel::Error,
+                "WARNING" => LogLevel::Warning,
+                "WARN" => LogLevel::Warning,
+                "INFO" => LogLevel::Info,
+                "DEBUG" => LogLevel::Debug,
+                _ => default_log_level,
+            },
+            Err(_) => default_log_level,
+        },
+    }
+}
 
 /// Returns a vector with all the QueueConfigs that have been passed as arguments
 ///
 /// Will exit if no queues have been specified.
-pub fn get_queue_configs() -> Vec<QueueConfig> {
+pub fn get_queue_configs(logger: &Logger) -> Vec<QueueConfig> {
     let mut queues: Vec<QueueConfig> = Vec::new();
 
     let args: Vec<_> = env::args().collect();
     if args.len() == 1 {
-        output::error(format!("{}", "No queue names specified, see --help"));
+        logger.error(format!("{}", "No queue names specified, see --help"));
         exit(1)
     }
 
