@@ -63,15 +63,15 @@ fn pop_and_process(
 
         if command_output.status.success() {
             logger.info(format!(
-                "T#{} execute result for {} OK#{}: {}",
-                thread_number, process_config.pull_queue_name, i, raw_command
+                "T#{} execute result for {} OK#{}/{}: {}",
+                thread_number, process_config.pull_queue_name, i, env_config.retry_limit + 1, raw_command
             ));
             return true;
         }
 
         logger.warning(format!(
-            "T#{} execute result for {} Err#{}: {}",
-            thread_number, process_config.pull_queue_name, i, raw_command
+            "T#{} execute result for {} Err#{}/{}: {}",
+            thread_number, process_config.pull_queue_name, i, env_config.retry_limit + 1, raw_command
         ));
 
         // sigterm received, better gracefully exit than retry

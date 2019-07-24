@@ -4,6 +4,7 @@
 - Added support for `COMMAND_QUEUE_LOG_LEVEL` environment variable
 - Refactored to use logger objects instead of calling static output methods
 - Display more details about the command-queue instance on startup
+- Display retry counter when processing messages
 
 ## 0.2.0
 - Added debug message before executing a pulled command
