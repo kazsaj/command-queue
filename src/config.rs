@@ -20,9 +20,11 @@ impl fmt::Display for EnvConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "ConnectionConfig: {} with pop_timeout: {}",
+            "hostname: {}, pop_timeout: {}, retry_limit: {}, retry_sleep: {}",
             self.get_connection_string(),
-            self.pop_timeout
+            self.pop_timeout,
+            self.retry_limit,
+            self.retry_sleep,
         )
     }
 }

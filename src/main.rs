@@ -22,9 +22,10 @@ fn main() {
     let signal_guard = SignalGuard::new();
 
     logger.info(format!(
-        "Spawning {} threads using {}",
+        "Spawning {} threads using {}, {}",
         queues.len(),
-        env_config
+        env_config,
+        logger,
     ));
 
     let mut threads: Vec<thread::JoinHandle<_>> = Vec::new();

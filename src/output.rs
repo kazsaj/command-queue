@@ -53,6 +53,12 @@ pub struct Logger {
     pub log_level: LogLevel,
 }
 
+impl fmt::Display for Logger {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "log_level: {}", self.log_level.to_str())
+    }
+}
+
 impl Logger {
     /// Generate "error" level output with the specified message
     pub fn error(&self, message: String) {
