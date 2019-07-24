@@ -5,18 +5,10 @@ use std::process::exit;
 
 /// Generate a logger based on the environment variable
 pub fn get_logger() -> Logger {
-    let default_log_level: LogLevel = LogLevel::Info;
     Logger {
         log_level: match env::var("COMMAND_QUEUE_LOG_LEVEL") {
-            Ok(value) => match value.to_ascii_uppercase().as_str() {
-                "ERROR" => LogLevel::Error,
-                "WARNING" => LogLevel::Warning,
-                "WARN" => LogLevel::Warning,
-                "INFO" => LogLevel::Info,
-                "DEBUG" => LogLevel::Debug,
-                _ => default_log_level,
-            },
-            Err(_) => default_log_level,
+            Ok(value) => LogLevel::from_string(value),
+            Err(_) => LogLevel::get_default(),
         },
     }
 }

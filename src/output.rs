@@ -1,4 +1,5 @@
 use std::time::SystemTime;
+use std::fmt;
 
 #[derive(Clone)]
 pub enum LogLevel {
@@ -6,6 +7,45 @@ pub enum LogLevel {
     Warning,
     Info,
     Debug,
+}
+
+impl LogLevel {
+    /// Convert the LogLevel enum to a numeric representation making it easier to compare them
+    fn to_number(&self) -> usize {
+        return match self {
+            LogLevel::Error => 3,
+            LogLevel::Warning => 2,
+            LogLevel::Info => 1,
+            LogLevel::Debug => 0,
+        };
+    }
+
+    /// Convert the LogLevel to a output suitable str
+    fn to_str(&self) -> &str {
+        match self {
+            LogLevel::Error => "ERROR",
+            LogLevel::Warning => "WARNING",
+            LogLevel::Info => "INFO",
+            LogLevel::Debug => "DEBUG",
+        }
+    }
+
+    /// Return the LogLevel based on a string representation
+    pub fn from_string(value: String) -> LogLevel {
+        match value.to_ascii_uppercase().as_str() {
+            "ERROR" => LogLevel::Error,
+            "WARNING" => LogLevel::Warning,
+            "WARN" => LogLevel::Warning,
+            "INFO" => LogLevel::Info,
+            "DEBUG" => LogLevel::Debug,
+            _ => LogLevel::get_default(),
+        }
+    }
+
+    /// Return default LogLevel
+    pub fn get_default() -> LogLevel {
+        LogLevel::Info
+    }
 }
 
 #[derive(Clone)]
@@ -36,35 +76,16 @@ impl Logger {
 
     /// Generic implementation for the output builder
     fn output(&self, message: String, message_level: LogLevel) {
-        if Logger::log_level_to_number(&self.log_level)
-            > Logger::log_level_to_number(&message_level)
-        {
+        if &self.log_level.to_number() > &message_level.to_number() {
             return;
         }
-
-        let level_output = match message_level {
-            LogLevel::Error => "ERROR",
-            LogLevel::Warning => "WARNING",
-            LogLevel::Info => "INFO",
-            LogLevel::Debug => "DEBUG",
-        };
 
         let timestamp = match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
             Ok(n) => n.as_secs(),
             Err(_) => panic!("SystemTime before UNIX EPOCH!"),
         };
 
-        println!("+{} [{}] {}", timestamp, level_output, message)
-    }
-
-    /// Convert the LogLevel enum to a numeric representation making it easier to compare them
-    fn log_level_to_number(log_level: &LogLevel) -> usize {
-        return match log_level {
-            LogLevel::Error => 3,
-            LogLevel::Warning => 2,
-            LogLevel::Info => 1,
-            LogLevel::Debug => 0,
-        };
+        println!("+{} [{}] {}", timestamp, message_level.to_str(), message)
     }
 }
 
@@ -73,34 +94,13 @@ mod tests {
     use output::{LogLevel, Logger};
 
     #[test]
-    fn logger_values() {
-        assert_eq!(
-            Logger::log_level_to_number(&LogLevel::Error),
-            Logger::log_level_to_number(&LogLevel::Error)
-        );
-        assert_eq!(
-            Logger::log_level_to_number(&LogLevel::Warning),
-            Logger::log_level_to_number(&LogLevel::Warning)
-        );
-        assert_eq!(
-            Logger::log_level_to_number(&LogLevel::Info),
-            Logger::log_level_to_number(&LogLevel::Info)
-        );
-        assert_eq!(
-            Logger::log_level_to_number(&LogLevel::Debug),
-            Logger::log_level_to_number(&LogLevel::Debug)
-        );
-        assert!(
-            Logger::log_level_to_number(&LogLevel::Error)
-                > Logger::log_level_to_number(&LogLevel::Warning)
-        );
-        assert!(
-            Logger::log_level_to_number(&LogLevel::Warning)
-                > Logger::log_level_to_number(&LogLevel::Info)
-        );
-        assert!(
-            Logger::log_level_to_number(&LogLevel::Info)
-                > Logger::log_level_to_number(&LogLevel::Debug)
-        );
+    fn log_level_values() {
+        assert_eq!(LogLevel::Error.to_number(), LogLevel::Error.to_number());
+        assert_eq!(LogLevel::Warning.to_number(), LogLevel::Warning.to_number());
+        assert_eq!(LogLevel::Info.to_number(), LogLevel::Info.to_number());
+        assert_eq!(LogLevel::Debug.to_number(), LogLevel::Debug.to_number());
+        assert!(LogLevel::Error.to_number() > LogLevel::Warning.to_number());
+        assert!(LogLevel::Warning.to_number() > LogLevel::Info.to_number());
+        assert!(LogLevel::Info.to_number() > LogLevel::Debug.to_number());
     }
 }
