@@ -62,9 +62,9 @@ pub fn get_env_config() -> EnvConfig {
     };
 
     let env_config = EnvConfig {
-        hostname,
-        port,
-        pop_timeout,
+        redis_hostname: hostname,
+        redis_port: port,
+        redis_pop_timeout: pop_timeout,
         retry_sleep,
         retry_limit,
     };

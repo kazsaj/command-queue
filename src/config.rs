@@ -2,16 +2,16 @@ use std::fmt;
 
 #[derive(Clone)]
 pub struct EnvConfig {
-    pub hostname: String,
-    pub port: usize,
-    pub pop_timeout: usize,
+    pub redis_hostname: String,
+    pub redis_port: usize,
+    pub redis_pop_timeout: usize,
     pub retry_sleep: u64,
     pub retry_limit: usize,
 }
 
 impl EnvConfig {
     pub fn get_connection_string(&self) -> String {
-        let connection_string: String = format!("redis://{}:{}", self.hostname, self.port);
+        let connection_string: String = format!("redis://{}:{}", self.redis_hostname, self.redis_port);
         connection_string
     }
 }
@@ -20,9 +20,9 @@ impl fmt::Display for EnvConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "hostname: {}, pop_timeout: {}, retry_limit: {}, retry_sleep: {}",
+            "redis_hostname: {}, redis_pop_timeout: {}, retry_limit: {}, retry_sleep: {}",
             self.get_connection_string(),
-            self.pop_timeout,
+            self.redis_pop_timeout,
             self.retry_limit,
             self.retry_sleep,
         )
@@ -84,9 +84,9 @@ mod tests {
     #[test]
     fn get_connection_string() {
         let config = EnvConfig {
-            hostname: "server_hostname".to_string(),
-            port: 666,
-            pop_timeout: 3,
+            redis_hostname: "server_hostname".to_string(),
+            redis_port: 666,
+            redis_pop_timeout: 3,
             retry_sleep: 31,
             retry_limit: 3,
         };

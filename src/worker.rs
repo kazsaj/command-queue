@@ -127,7 +127,7 @@ fn pop_from_queue(
             return Err(error);
         }
     };
-    connection.blpop(queue_name, env_config.pop_timeout)
+    connection.blpop(queue_name, env_config.redis_pop_timeout)
 }
 
 fn push_to_queue(
