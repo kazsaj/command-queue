@@ -1,6 +1,7 @@
 use config::{EnvConfig, QueueConfig};
 use output::{LogLevel, Logger};
 use std::env;
+use std::time::SystemTime;
 use std::process::exit;
 
 /// Generate a logger based on the environment variable
@@ -40,15 +41,25 @@ pub fn get_queue_configs(logger: &Logger) -> Vec<QueueConfig> {
 
 /// Returns connection configuration to Redis
 pub fn get_env_config() -> EnvConfig {
-    let hostname: String = match env::var("COMMAND_QUEUE_REDIS_HOSTNAME") {
+    let instance_name: String = match env::var("COMMAND_QUEUE_INSTANCE_NAME") {
+        Ok(value) => value,
+        Err(_) => match env::var("HOSTNAME") {
+            Ok(value) => value,
+            Err(_) => match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
+                Ok(n) => format!("instance-{}", n.as_secs()),
+                Err(_) => panic!("SystemTime before UNIX EPOCH!"),
+            }
+        },
+    };
+    let redis_hostname: String = match env::var("COMMAND_QUEUE_REDIS_HOSTNAME") {
         Ok(value) => value,
         Err(_) => "127.0.0.1".to_string(),
     };
-    let port: usize = match env::var("COMMAND_QUEUE_REDIS_PORT") {
+    let redis_port: usize = match env::var("COMMAND_QUEUE_REDIS_PORT") {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 6379,
     };
-    let pop_timeout: usize = match env::var("COMMAND_QUEUE_REDIS_POP_TIMEOUT") {
+    let redis_pop_timeout: usize = match env::var("COMMAND_QUEUE_REDIS_POP_TIMEOUT") {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 3,
     };
@@ -62,9 +73,10 @@ pub fn get_env_config() -> EnvConfig {
     };
 
     let env_config = EnvConfig {
-        redis_hostname: hostname,
-        redis_port: port,
-        redis_pop_timeout: pop_timeout,
+        instance_name,
+        redis_hostname,
+        redis_port,
+        redis_pop_timeout,
         retry_sleep,
         retry_limit,
     };

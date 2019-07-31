@@ -1,5 +1,8 @@
 # Change Log
 
+## Unreleased
+- Added support for `COMMAND_QUEUE_INSTANCE_NAME` environment variable stored in `EnvConfig.instance_name`
+
 ## 0.3.0
 - Added support for `COMMAND_QUEUE_LOG_LEVEL` environment variable
 - Refactored to use logger objects instead of calling static output methods

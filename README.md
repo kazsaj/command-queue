@@ -21,12 +21,14 @@ If it's a no-no for you, here are some of the options you have:
 - Wait `m` seconds (default: 31) between each retry attempt
 
 ## Environment variables
+- `COMMAND_QUEUE_INSTANCE_NAME` - how should the instance identify itself when needed, if `COMMAND_QUEUE_INSTANCE_NAME` is empty it will try to use `HOSTNAME` environment variable, and if that fails it will use `instance-NUMBER`, where number is the number of seconds since the Unix epoch during the moment of startup.
 - `COMMAND_QUEUE_REDIS_HOSTNAME` - hostname of the redis instance to connect to (default: 127.0.0.1)
 - `COMMAND_QUEUE_REDIS_PORT` - port of the redis instance (default: 6379)
 - `COMMAND_QUEUE_REDIS_POP_TIMEOUT` - how long (in seconds) should it wait during each redis blocking pop command (default: 3)
 - `COMMAND_QUEUE_RETRY_SLEEP` - how long (in seconds) should it wait between each retry attempt to process a command (default: 31)
 - `COMMAND_QUEUE_RETRY_LIMIT` - how many times should it retry to process a command (failure = returning non-zero response). This number represents any additional attempts running the command, besides the original one (default: 2)
 - `COMMAND_QUEUE_LOG_LEVEL` - what level of log messages should be shown, supported levels: `ERROR`, `WARNING`, `INFO`, `DEBUG` (default `INFO`)
+
 ## Arguments
 
 ```bash
