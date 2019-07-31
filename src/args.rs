@@ -48,7 +48,7 @@ pub fn get_env_config() -> EnvConfig {
             Err(_) => match SystemTime::now().duration_since(SystemTime::UNIX_EPOCH) {
                 Ok(n) => format!("instance-{}", n.as_secs()),
                 Err(_) => panic!("SystemTime before UNIX EPOCH!"),
-            }
+            },
         },
     };
     let redis_hostname: String = match env::var("COMMAND_QUEUE_REDIS_HOSTNAME") {
@@ -71,6 +71,10 @@ pub fn get_env_config() -> EnvConfig {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 2,
     };
+    let current_command_expire: usize = match env::var("COMMAND_QUEUE_CURRENT_COMMAND_EXPIRE") {
+        Ok(value) => value.parse::<usize>().unwrap(),
+        Err(_) => 3600,
+    };
 
     let env_config = EnvConfig {
         instance_name,
@@ -79,6 +83,7 @@ pub fn get_env_config() -> EnvConfig {
         redis_pop_timeout,
         retry_sleep,
         retry_limit,
+        current_command_expire,
     };
     env_config
 }

@@ -8,12 +8,12 @@ pub struct EnvConfig {
     pub redis_pop_timeout: usize,
     pub retry_sleep: u64,
     pub retry_limit: usize,
+    pub current_command_expire: usize,
 }
 
 impl EnvConfig {
     pub fn get_connection_string(&self) -> String {
-        let connection_string: String = format!("redis://{}:{}", self.redis_hostname, self.redis_port);
-        connection_string
+        format!("redis://{}:{}", self.redis_hostname, self.redis_port)
     }
 }
 
@@ -92,6 +92,7 @@ mod tests {
             redis_pop_timeout: 3,
             retry_sleep: 31,
             retry_limit: 3,
+            current_command_expire: 30,
         };
         assert_eq!(
             config.get_connection_string(),
