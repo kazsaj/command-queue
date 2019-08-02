@@ -1,5 +1,5 @@
-use std::time::SystemTime;
 use std::fmt;
+use std::time::SystemTime;
 
 #[derive(Clone)]
 pub enum LogLevel {
@@ -97,7 +97,7 @@ impl Logger {
 
 #[cfg(test)]
 mod tests {
-    use output::{LogLevel};
+    use output::LogLevel;
 
     #[test]
     fn log_level_values() {

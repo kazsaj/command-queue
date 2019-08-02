@@ -1,8 +1,8 @@
 use config::{EnvConfig, QueueConfig};
 use output::{LogLevel, Logger};
 use std::env;
-use std::time::SystemTime;
 use std::process::exit;
+use std::time::SystemTime;
 
 /// Generate a logger based on the environment variable
 pub fn get_logger() -> Logger {
@@ -71,7 +71,7 @@ pub fn get_env_config() -> EnvConfig {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 2,
     };
-    let current_command_expire: usize = match env::var("COMMAND_QUEUE_CURRENT_COMMAND_EXPIRE") {
+    let last_command_expire: usize = match env::var("COMMAND_QUEUE_LAST_COMMAND_EXPIRE") {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 3600,
     };
@@ -83,7 +83,7 @@ pub fn get_env_config() -> EnvConfig {
         redis_pop_timeout,
         retry_sleep,
         retry_limit,
-        current_command_expire,
+        last_command_expire,
     };
     env_config
 }

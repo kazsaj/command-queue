@@ -8,12 +8,18 @@ pub struct EnvConfig {
     pub redis_pop_timeout: usize,
     pub retry_sleep: u64,
     pub retry_limit: usize,
-    pub current_command_expire: usize,
+    pub last_command_expire: usize,
 }
 
 impl EnvConfig {
     pub fn get_connection_string(&self) -> String {
         format!("redis://{}:{}", self.redis_hostname, self.redis_port)
+    }
+    pub fn get_last_command_key(&self, thread_number: &usize) -> String {
+        format!(
+            "{}_thread-{}_lastCommand",
+            self.instance_name, thread_number
+        )
     }
 }
 
@@ -21,12 +27,13 @@ impl fmt::Display for EnvConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(
             f,
-            "instance_name: {}, redis_hostname: {}, redis_pop_timeout: {}, retry_limit: {}, retry_sleep: {}",
+            "instance_name: {}, redis_hostname: {}, redis_pop_timeout: {}, retry_limit: {}, retry_sleep: {}, last_command_expire: {}",
             self.instance_name,
             self.get_connection_string(),
             self.redis_pop_timeout,
             self.retry_limit,
             self.retry_sleep,
+            self.last_command_expire,
         )
     }
 }
@@ -92,7 +99,7 @@ mod tests {
             redis_pop_timeout: 3,
             retry_sleep: 31,
             retry_limit: 3,
-            current_command_expire: 30,
+            last_command_expire: 30,
         };
         assert_eq!(
             config.get_connection_string(),

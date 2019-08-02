@@ -19,6 +19,7 @@ If it's a no-no for you, here are some of the options you have:
 - If a thread does not have anything to process, it will pull from the other lists (if multiple lists were set up), to avoid them sitting idle
 - On execution failure run `n` times (default: 3) before giving up on the failing task and moving it to an "error" list
 - Wait `m` seconds (default: 31) between each retry attempt
+- Store the last executed command in Redis for easier inspection of what each thread works on
 
 ## Environment variables
 - `COMMAND_QUEUE_INSTANCE_NAME` - how should the instance identify itself when needed, if `COMMAND_QUEUE_INSTANCE_NAME` is empty it will try to use `HOSTNAME` environment variable, and if that fails it will use `instance-NUMBER`, where number is the number of seconds since the Unix epoch during the moment of startup.
@@ -28,6 +29,7 @@ If it's a no-no for you, here are some of the options you have:
 - `COMMAND_QUEUE_RETRY_SLEEP` - how long (in seconds) should it wait between each retry attempt to process a command (default: 31)
 - `COMMAND_QUEUE_RETRY_LIMIT` - how many times should it retry to process a command (failure = returning non-zero response). This number represents any additional attempts running the command, besides the original one (default: 2)
 - `COMMAND_QUEUE_LOG_LEVEL` - what level of log messages should be shown, supported levels: `ERROR`, `WARNING`, `INFO`, `DEBUG` (default `INFO`)
+- `COMMAND_QUEUE_LAST_COMMAND_EXPIRE` - how long should we store the last executed command info in Redis (default: 3600)
 
 ## Arguments
 
