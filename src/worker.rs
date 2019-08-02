@@ -152,7 +152,7 @@ fn execute_command(
             return true;
         }
 
-        if i != env_config.retry_limit {
+        if i != env_config.retry_limit + 1 {
             // only sleep if it's not the last attempt
             thread::sleep(time::Duration::from_secs(env_config.retry_sleep));
         }
