@@ -74,7 +74,13 @@ fn pop_and_process(
         thread_number, process_config.pull_queue_name, raw_command
     ));
 
-    set_as_last_command(&redis_connection, &thread_number, &env_config, &raw_command);
+    set_as_last_command(
+        &logger,
+        &redis_connection,
+        &thread_number,
+        &env_config,
+        &raw_command,
+    );
 
     if execute_command(
         &thread_number,
@@ -202,7 +208,8 @@ fn push_to_queue(
     queue_name: &String,
     data: String,
 ) {
-    match redis_connection.rpush(queue_name, data) {
+    let push_result: redis::RedisResult<usize> = redis_connection.rpush(queue_name, data.clone());
+    match push_result {
         Ok(_) => {}
         Err(error) => logger.error(format!(
             "Could not add \"{}\" to {}: {:?}",
@@ -213,14 +220,23 @@ fn push_to_queue(
 
 /// Report the last command we ran to redis
 fn set_as_last_command(
+    logger: &Logger,
     redis_connection: &Connection,
     thread_number: &usize,
     env_config: &EnvConfig,
     raw_command: &String,
 ) {
-    let _: redis::RedisResult<()> = redis_connection.set_ex(
-        env_config.get_last_command_key(thread_number),
+    let last_command_key = env_config.get_last_command_key(thread_number);
+    let set_result: redis::RedisResult<()> = redis_connection.set_ex(
+        last_command_key.clone(),
         raw_command,
         env_config.last_command_expire,
     );
+    match set_result {
+        Ok(_) => {}
+        Err(error) => logger.error(format!(
+            "Could not set \"{}\": {:?}",
+            last_command_key, error
+        )),
+    }
 }
