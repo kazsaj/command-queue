@@ -1,8 +1,8 @@
 # Change Log
 
-## Unreleased
+## 0.4.0
 - Added support for `COMMAND_QUEUE_INSTANCE_NAME` environment variable stored in `EnvConfig.instance_name`
-- Letting the subthreads gracefully join the main thread on shutdown
+- Letting the sub-threads gracefully join the main thread on shutdown
 - Re-using connection to Redis for a single command cycle
 - Saving last executed command in Redis under an expiring key with unique name per thread
 - Fixing delay before the last command execution retry attempt
