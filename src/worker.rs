@@ -86,17 +86,12 @@ fn pop_and_process(
         return true;
     }
 
-    match push_to_queue(
+    push_to_queue(
+        &logger,
         &redis_connection,
         &process_config.error_queue_name,
         raw_command.clone(),
-    ) {
-        Ok(_) => {}
-        Err(error) => logger.error(format!(
-            "Could not add \"{}\" to {}: {:?}",
-            raw_command, process_config.error_queue_name, error
-        )),
-    };
+    );
 
     true
 }
@@ -202,11 +197,18 @@ fn pop_from_queue(
 
 /// Add an entry to the end of a queue
 fn push_to_queue(
+    logger: &Logger,
     redis_connection: &Connection,
     queue_name: &String,
     data: String,
-) -> redis::RedisResult<usize> {
-    redis_connection.rpush(queue_name, data)
+) {
+    match redis_connection.rpush(queue_name, data) {
+        Ok(_) => {}
+        Err(error) => logger.error(format!(
+            "Could not add \"{}\" to {}: {:?}",
+            data, queue_name, error
+        )),
+    }
 }
 
 /// Report the last command we ran to redis
