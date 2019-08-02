@@ -9,6 +9,13 @@ use std::{thread, time};
 use worker::redis::Commands;
 use STOP;
 
+enum Status {
+    FailedToPull,
+    ExecutedCommand,
+    FailedToExecute,
+    ReceivedStopSignal,
+}
+
 pub fn main(
     thread_number: usize,
     logger: Logger,
@@ -26,8 +33,11 @@ pub fn main(
             if check_stop(&thread_number, &logger) {
                 return;
             }
-            if pop_and_process(&thread_number, &logger, &env_config, &process_configs[i]) {
-                break;
+            match pop_and_process(&thread_number, &logger, &env_config, &process_configs[i]) {
+                Status::FailedToPull => continue, // continue will attempt to use a different queue
+                Status::ExecutedCommand => break, // break will revert to the primary queue
+                Status::FailedToExecute => break,
+                Status::ReceivedStopSignal => return, // close the thread
             }
         }
     }
@@ -51,10 +61,10 @@ fn pop_and_process(
     logger: &Logger,
     env_config: &EnvConfig,
     process_config: &ProcessConfig,
-) -> bool {
+) -> Status {
     let redis_connection: Connection = match get_connection(&thread_number, &logger, &env_config) {
         Ok(connection) => connection,
-        Err(_) => return false,
+        Err(_) => return Status::FailedToPull,
     };
 
     let pulled_value = pop_from_queue(
@@ -64,7 +74,7 @@ fn pop_and_process(
     );
     if !pulled_value.is_ok() {
         // wasn't able to pull anything that we can process
-        return false;
+        return return Status::FailedToPull;
     }
 
     let raw_command = pulled_value.unwrap().1;
@@ -89,7 +99,7 @@ fn pop_and_process(
         &process_config,
         &raw_command,
     ) {
-        return true;
+        return Status::ExecutedCommand;
     }
 
     push_to_queue(
@@ -99,7 +109,7 @@ fn pop_and_process(
         raw_command.clone(),
     );
 
-    true
+    Status::FailedToExecute
 }
 
 /// Try to execute a command the specified number of times
