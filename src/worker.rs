@@ -9,6 +9,7 @@ use std::{thread, time};
 use worker::redis::Commands;
 use STOP;
 
+#[derive(PartialEq)]
 enum Status {
     FailedToPull,
     ExecutedCommand,
@@ -74,7 +75,7 @@ fn pop_and_process(
     );
     if !pulled_value.is_ok() {
         // wasn't able to pull anything that we can process
-        return return Status::FailedToPull;
+        return Status::FailedToPull;
     }
 
     let raw_command = pulled_value.unwrap().1;
@@ -92,24 +93,24 @@ fn pop_and_process(
         &raw_command,
     );
 
-    if execute_command(
+    let execute_result = execute_command(
         &thread_number,
         &logger,
         &env_config,
         &process_config,
         &raw_command,
-    ) {
-        return Status::ExecutedCommand;
-    }
-
-    push_to_queue(
-        &logger,
-        &redis_connection,
-        &process_config.error_queue_name,
-        raw_command.clone(),
     );
 
-    Status::FailedToExecute
+    if execute_result != Status::ExecutedCommand {
+        push_to_queue(
+            &logger,
+            &redis_connection,
+            &process_config.error_queue_name,
+            raw_command.clone(),
+        );
+    }
+
+    execute_result
 }
 
 /// Try to execute a command the specified number of times
@@ -119,7 +120,7 @@ fn execute_command(
     env_config: &EnvConfig,
     process_config: &ProcessConfig,
     raw_command: &String,
-) -> bool {
+) -> Status {
     for i in 1..env_config.retry_limit + 2 {
         let command_output = Command::new("sh")
             .arg("-c")
@@ -136,7 +137,7 @@ fn execute_command(
                 env_config.retry_limit + 1,
                 raw_command
             ));
-            return true;
+            return Status::ExecutedCommand;
         }
 
         logger.warning(format!(
@@ -149,7 +150,7 @@ fn execute_command(
         ));
 
         if check_stop(&thread_number, &logger) {
-            return true;
+            return Status::ReceivedStopSignal;
         }
 
         if i != env_config.retry_limit + 1 {
@@ -163,7 +164,7 @@ fn execute_command(
         thread_number, process_config.error_queue_name, raw_command
     ));
 
-    false
+    Status::FailedToExecute
 }
 
 /// Connect with redis
