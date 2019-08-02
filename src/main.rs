@@ -47,7 +47,10 @@ fn main() {
         // wait for all the threads to finish before exiting
         for i in 1..threads.len() + 1 {
             match threads.pop() {
-                Some(_) => logger.info(format!("T#{} finished", i)),
+                Some(thread) => {
+                    let _ = thread.join();
+                    logger.info(format!("T#{} finished", i))
+                }
                 None => logger.error(format!("T#{} failed to join", i)),
             }
         }
