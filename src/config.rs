@@ -86,11 +86,6 @@ pub enum Priority {
 impl ProcessConfig {
     pub fn new(queue_config: &QueueConfig, priority: Priority) -> ProcessConfig {
         ProcessConfig {
-            // pull_queue_name: if priority {
-            //     queue_config.get_priority_queue_name()
-            // } else {
-            //     queue_config.get_default_queue_name()
-            // },
             pull_queue_name: match priority {
                 Priority::High => queue_config.get_high_queue_name(),
                 Priority::Default => queue_config.get_default_queue_name(),
