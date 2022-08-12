@@ -123,8 +123,9 @@ mod tests {
         let queue = QueueConfig {
             name: "hello".to_string(),
         };
-        assert_eq!(queue.get_priority_queue_name(), "hello_priority");
+        assert_eq!(queue.get_high_queue_name(), "hello_high");
         assert_eq!(queue.get_default_queue_name(), "hello_default");
+        assert_eq!(queue.get_low_queue_name(), "hello_low");
         assert_eq!(queue.get_error_queue_name(), "hello_error");
     }
 }
