@@ -15,7 +15,7 @@ If it's a no-no for you, here are some of the options you have:
 
 ## Features
 - Pull commands from Redis lists and execute them (FIFO) in the same context as this binary runs
-- First pulls from a list with `_priority` suffix, then with `_default` to allow for basic task prioritisation
+- First pulls from a list with `_high` suffix, then with `_default`, then with `_low` to allow for basic task prioritisation
 - Uses multiple threads to pull from different lists and can run multiple threads for the same list as well
 - If a thread does not have anything to process, it will pull from the other lists (if multiple lists were set up), to avoid them sitting idle
 - On execution failure runs the current command `n` times (default: 3) before giving up on the failing task and moving it to an `_error` list
@@ -60,7 +60,7 @@ command-queue alfa alfa bravo charlie
 - `MONITOR` - watch for any commands executed on the server, useful for debugging
 - `RPUSH key value [value]` - add element to the list
     ```
-    rpush alfa_priority "echo hello" "ls -l" "false"
+    rpush alfa_high "echo hello" "ls -l" "false"
     ```
 - `BLPOP key` - remove first element from a list, or block until you find one
 
