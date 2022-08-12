@@ -6,7 +6,7 @@ mod config;
 mod output;
 mod worker;
 
-use config::{ProcessConfig, QueueConfig};
+use config::{Priority, ProcessConfig, QueueConfig};
 use graceful::SignalGuard;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
@@ -61,14 +61,16 @@ fn main() {
 
 fn get_process_configs(queues: &Vec<QueueConfig>, thread_queue: QueueConfig) -> Vec<ProcessConfig> {
     let mut process_configs: Vec<ProcessConfig> = Vec::new();
-    process_configs.push(ProcessConfig::new(&thread_queue, true));
-    process_configs.push(ProcessConfig::new(&thread_queue, false));
+    process_configs.push(ProcessConfig::new(&thread_queue, Priority::High));
+    process_configs.push(ProcessConfig::new(&thread_queue, Priority::Default));
+    process_configs.push(ProcessConfig::new(&thread_queue, Priority::Low));
 
     // remove instance of the thread queue from the list, to avoid trying to process it twice
     let other_queues = get_remaining_queues(queues, &thread_queue);
     for i in 0..other_queues.len() {
-        process_configs.push(ProcessConfig::new(&other_queues[i], true));
-        process_configs.push(ProcessConfig::new(&other_queues[i], false));
+        process_configs.push(ProcessConfig::new(&other_queues[i], Priority::High));
+        process_configs.push(ProcessConfig::new(&other_queues[i], Priority::Default));
+        process_configs.push(ProcessConfig::new(&other_queues[i], Priority::Low));
     }
 
     process_configs
