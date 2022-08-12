@@ -91,7 +91,7 @@ impl ProcessConfig {
             // } else {
             //     queue_config.get_default_queue_name()
             // },
-            pull_queue_name: match Priority {
+            pull_queue_name: match priority {
                 Priority::High => queue_config.get_high_queue_name(),
                 Priority::Default => queue_config.get_default_queue_name(),
                 Priority::Low => queue_config.get_low_queue_name()
