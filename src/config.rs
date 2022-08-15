@@ -44,14 +44,19 @@ pub struct QueueConfig {
 }
 
 impl QueueConfig {
-    pub fn get_priority_queue_name(&self) -> String {
+    pub fn get_high_queue_name(&self) -> String {
         let mut queue_name = self.name.clone();
-        queue_name.push_str("_priority");
+        queue_name.push_str("_high");
         queue_name
     }
     pub fn get_default_queue_name(&self) -> String {
         let mut queue_name = self.name.clone();
         queue_name.push_str("_default");
+        queue_name
+    }
+    pub fn get_low_queue_name(&self) -> String {
+        let mut queue_name = self.name.clone();
+        queue_name.push_str("_low");
         queue_name
     }
     pub fn get_error_queue_name(&self) -> String {
@@ -72,13 +77,19 @@ pub struct ProcessConfig {
     pub error_queue_name: String,
 }
 
+pub enum Priority {
+    High,
+    Default,
+    Low
+}
+
 impl ProcessConfig {
-    pub fn new(queue_config: &QueueConfig, priority: bool) -> ProcessConfig {
+    pub fn new(queue_config: &QueueConfig, priority: Priority) -> ProcessConfig {
         ProcessConfig {
-            pull_queue_name: if priority {
-                queue_config.get_priority_queue_name()
-            } else {
-                queue_config.get_default_queue_name()
+            pull_queue_name: match priority {
+                Priority::High => queue_config.get_high_queue_name(),
+                Priority::Default => queue_config.get_default_queue_name(),
+                Priority::Low => queue_config.get_low_queue_name()
             },
             error_queue_name: queue_config.get_error_queue_name(),
         }
@@ -112,8 +123,9 @@ mod tests {
         let queue = QueueConfig {
             name: "hello".to_string(),
         };
-        assert_eq!(queue.get_priority_queue_name(), "hello_priority");
+        assert_eq!(queue.get_high_queue_name(), "hello_high");
         assert_eq!(queue.get_default_queue_name(), "hello_default");
+        assert_eq!(queue.get_low_queue_name(), "hello_low");
         assert_eq!(queue.get_error_queue_name(), "hello_error");
     }
 }
