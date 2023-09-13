@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.5.0
+- three levels of priority now available _high, _default and _low instead of _priority and _default
+
 ## 0.4.0
 - Added support for `COMMAND_QUEUE_INSTANCE_NAME` environment variable stored in `EnvConfig.instance_name`
 - Letting the sub-threads gracefully join the main thread on shutdown
