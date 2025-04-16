@@ -84,6 +84,9 @@ fn get_remaining_queues(queues: &Vec<QueueConfig>, exclude: &QueueConfig) -> Vec
         if queues[k].name == exclude.name {
             continue;
         }
+        if other_queues.contains(&queues[k]) {
+            continue;
+        }
         let copied_config = queues[k].clone();
         other_queues.push(copied_config);
     }
