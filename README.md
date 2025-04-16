@@ -66,3 +66,5 @@ command-queue alfa alfa bravo charlie
 
 ## TODO
 - diagram explaining how the queue works
+- update dependencies
+- add param/option to avoid queue sharing - each thread would only check their own queues
