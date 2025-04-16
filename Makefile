@@ -11,10 +11,10 @@ test:
 	cargo test
 
 run:
-	docker-compose up -d && COMMAND_QUEUE_LOG_LEVEL=DEBUG cargo run alfa alfa bravo charlie
+	docker compose up -d && COMMAND_QUEUE_LOG_LEVEL=DEBUG cargo run alfa alfa bravo charlie
 
 redis-cli:
-	docker-compose up -d && docker exec -it command_queue_redis redis-cli
+	docker compose up -d && docker exec -it command_queue_redis redis-cli
 
 format:
 	cargo fmt

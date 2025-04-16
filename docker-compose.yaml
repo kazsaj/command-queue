@@ -1,4 +1,3 @@
-version: "2.0"
 services:
   cache:
     container_name: command_queue_redis
