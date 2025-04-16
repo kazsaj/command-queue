@@ -28,6 +28,14 @@ pub fn main(
         thread_number,
         process_configs.len(),
     ));
+    logger.debug(format!(
+        "T#{} lists order: {:?}",
+        thread_number,
+        process_configs
+            .iter()
+            .map(|config| &config.pull_queue_name)
+            .collect::<Vec<_>>(),
+    ));
 
     loop {
         for i in 0..process_configs.len() {
