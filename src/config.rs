@@ -80,7 +80,7 @@ pub struct ProcessConfig {
 pub enum Priority {
     High,
     Default,
-    Low
+    Low,
 }
 
 impl ProcessConfig {
@@ -89,7 +89,7 @@ impl ProcessConfig {
             pull_queue_name: match priority {
                 Priority::High => queue_config.get_high_queue_name(),
                 Priority::Default => queue_config.get_default_queue_name(),
-                Priority::Low => queue_config.get_low_queue_name()
+                Priority::Low => queue_config.get_low_queue_name(),
             },
             error_queue_name: queue_config.get_error_queue_name(),
         }
