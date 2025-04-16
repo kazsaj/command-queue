@@ -8,8 +8,8 @@ mod worker;
 
 use config::{Priority, ProcessConfig, QueueConfig};
 use graceful::SignalGuard;
+use rand::rng;
 use rand::seq::SliceRandom;
-use rand::thread_rng;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 
@@ -88,6 +88,6 @@ fn get_remaining_queues(queues: &Vec<QueueConfig>, exclude: &QueueConfig) -> Vec
         other_queues.push(copied_config);
     }
 
-    other_queues.shuffle(&mut thread_rng());
+    other_queues.shuffle(&mut rng());
     other_queues
 }
