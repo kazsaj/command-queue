@@ -38,8 +38,7 @@ impl fmt::Display for EnvConfig {
     }
 }
 
-#[derive(Clone)]
-#[derive(PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct QueueConfig {
     pub name: String,
 }
