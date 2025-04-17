@@ -6,4 +6,4 @@ authors = ["kazsaj <ksajkowski@gmail.com>"]
 [dependencies]
 graceful = "0.1.1"
 rand = "0.9.0"
-redis = "0.10.0"
+redis = "0.29.5"
