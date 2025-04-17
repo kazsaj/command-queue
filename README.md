@@ -65,6 +65,6 @@ command-queue alfa alfa bravo charlie
 - `BLPOP key` - remove first element from a list, or block until you find one
 
 ## TODO
-- diagram explaining how the queue works
 - update dependencies
+- release v1
 - add param/option to avoid queue sharing - each thread would only check their own queues
