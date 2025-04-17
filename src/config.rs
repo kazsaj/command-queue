@@ -5,10 +5,10 @@ pub struct EnvConfig {
     pub instance_name: String,
     pub redis_hostname: String,
     pub redis_port: usize,
-    pub redis_pop_timeout: usize,
+    pub redis_pop_timeout: f64,
     pub retry_sleep: u64,
     pub retry_limit: usize,
-    pub last_command_expire: usize,
+    pub last_command_expire: u64,
 }
 
 impl EnvConfig {
@@ -107,7 +107,7 @@ mod tests {
             instance_name: "some-name".to_string(),
             redis_hostname: "server_hostname".to_string(),
             redis_port: 666,
-            redis_pop_timeout: 3,
+            redis_pop_timeout: 3.0,
             retry_sleep: 31,
             retry_limit: 3,
             last_command_expire: 30,

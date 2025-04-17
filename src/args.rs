@@ -59,9 +59,9 @@ pub fn get_env_config() -> EnvConfig {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 6379,
     };
-    let redis_pop_timeout: usize = match env::var("COMMAND_QUEUE_REDIS_POP_TIMEOUT") {
-        Ok(value) => value.parse::<usize>().unwrap(),
-        Err(_) => 3,
+    let redis_pop_timeout: f64 = match env::var("COMMAND_QUEUE_REDIS_POP_TIMEOUT") {
+        Ok(value) => value.parse::<f64>().unwrap(),
+        Err(_) => 3.0,
     };
     let retry_sleep: u64 = match env::var("COMMAND_QUEUE_RETRY_SLEEP") {
         Ok(value) => value.parse::<u64>().unwrap(),
@@ -71,8 +71,8 @@ pub fn get_env_config() -> EnvConfig {
         Ok(value) => value.parse::<usize>().unwrap(),
         Err(_) => 2,
     };
-    let last_command_expire: usize = match env::var("COMMAND_QUEUE_LAST_COMMAND_EXPIRE") {
-        Ok(value) => value.parse::<usize>().unwrap(),
+    let last_command_expire: u64 = match env::var("COMMAND_QUEUE_LAST_COMMAND_EXPIRE") {
+        Ok(value) => value.parse::<u64>().unwrap(),
         Err(_) => 3600,
     };
 
