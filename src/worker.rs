@@ -71,13 +71,14 @@ fn pop_and_process(
     env_config: &EnvConfig,
     process_config: &ProcessConfig,
 ) -> Status {
-    let redis_connection: Connection = match get_connection(&thread_number, &logger, &env_config) {
-        Ok(connection) => connection,
-        Err(_) => return Status::FailedToPull,
-    };
+    let mut redis_connection: Connection =
+        match get_connection(&thread_number, &logger, &env_config) {
+            Ok(connection) => connection,
+            Err(_) => return Status::FailedToPull,
+        };
 
     let pulled_value = pop_from_queue(
-        &redis_connection,
+        &mut redis_connection,
         &env_config,
         &process_config.pull_queue_name,
     );
@@ -95,7 +96,7 @@ fn pop_and_process(
 
     set_as_last_command(
         &logger,
-        &redis_connection,
+        &mut redis_connection,
         &thread_number,
         &env_config,
         &raw_command,
@@ -112,7 +113,7 @@ fn pop_and_process(
     if execute_result != Status::ExecutedCommand {
         push_to_queue(
             &logger,
-            &redis_connection,
+            &mut redis_connection,
             &process_config.error_queue_name,
             raw_command.clone(),
         );
@@ -213,7 +214,7 @@ fn get_connection(
 
 /// Pop a value from a specified queue
 fn pop_from_queue(
-    redis_connection: &Connection,
+    redis_connection: &mut Connection,
     env_config: &EnvConfig,
     queue_name: &String,
 ) -> redis::RedisResult<(String, String)> {
@@ -223,7 +224,7 @@ fn pop_from_queue(
 /// Add an entry to the end of a queue
 fn push_to_queue(
     logger: &Logger,
-    redis_connection: &Connection,
+    redis_connection: &mut Connection,
     queue_name: &String,
     data: String,
 ) {
@@ -240,7 +241,7 @@ fn push_to_queue(
 /// Report the last command we ran to redis
 fn set_as_last_command(
     logger: &Logger,
-    redis_connection: &Connection,
+    redis_connection: &mut Connection,
     thread_number: &usize,
     env_config: &EnvConfig,
     raw_command: &String,
