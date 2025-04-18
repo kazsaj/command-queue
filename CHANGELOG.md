@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.0
+- fixed with an uneven number of lists being checked in different threads, if there was more than one thread checking the same list
+- updated dependencies to address dependabot alerts
+
 ## 0.5.0
 - three levels of priority now available _high, _default and _low instead of _priority and _default
 

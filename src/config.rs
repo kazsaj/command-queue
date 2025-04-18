@@ -98,8 +98,8 @@ impl ProcessConfig {
 
 #[cfg(test)]
 mod tests {
-    use config::EnvConfig;
-    use config::QueueConfig;
+    use crate::config::EnvConfig;
+    use crate::config::QueueConfig;
 
     #[test]
     fn get_connection_string() {

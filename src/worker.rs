@@ -1,13 +1,13 @@
 extern crate redis;
 
 use self::redis::Connection;
-use config::{EnvConfig, ProcessConfig};
-use output::Logger;
+use crate::STOP;
+use crate::config::{EnvConfig, ProcessConfig};
+use crate::output::Logger;
+use crate::worker::redis::Commands;
 use std::process::Command;
 use std::sync::atomic::Ordering;
 use std::{thread, time};
-use worker::redis::Commands;
-use STOP;
 
 #[derive(PartialEq)]
 enum Status {

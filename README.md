@@ -52,7 +52,7 @@ command-queue alfa alfa bravo charlie
 ```
 
 ## Repository build requirements
-- [Rust](https://www.rust-lang.org/tools/install) (1.30 or later) and Cargo
+- [Rust](https://www.rust-lang.org/tools/install) (1.72.0 or later) and Cargo
 - Docker and Docker-compose - which will bring up a local Redis instance, useful for testing
 - Make - if you want to use the Makefile commands
 
@@ -65,6 +65,4 @@ command-queue alfa alfa bravo charlie
 - `BLPOP key` - remove first element from a list, or block until you find one
 
 ## TODO
-- update dependencies
-- release v1
 - add param/option to avoid queue sharing - each thread would only check their own queues

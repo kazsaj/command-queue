@@ -1,5 +1,5 @@
-use config::{EnvConfig, QueueConfig};
-use output::{LogLevel, Logger};
+use crate::config::{EnvConfig, QueueConfig};
+use crate::output::{LogLevel, Logger};
 use std::env;
 use std::process::exit;
 use std::time::SystemTime;

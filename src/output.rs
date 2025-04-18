@@ -97,7 +97,7 @@ impl Logger {
 
 #[cfg(test)]
 mod tests {
-    use output::LogLevel;
+    use crate::output::LogLevel;
 
     #[test]
     fn log_level_values() {
